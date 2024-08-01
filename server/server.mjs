@@ -1,7 +1,10 @@
-// Required Modules and imports
+// Required Modules
 import express from 'express';
 import dotenv from 'dotenv';
-import chatWithMentor from './middleware/mentor.mjs';
+import mongoose from 'mongoose';
+
+// Required Files
+import mentorRoute from './routes/mentor.mjs';
 
 // Configuration
 dotenv.config();
@@ -12,13 +15,13 @@ const port = process.env.PORT || 3000;
 
 /* Default Middlewares */
 app.use(express.json());
+// Connecting to MongoDB database
+mongoose.connect(process.env.MONGODB_URI)
+.then(() => { console.log('Connected to MongoDB'); })
+.catch((err) => console.log(err));
 
 /* Routes */
-app.post('/chat', async (req, res) => {
-    const { name, prompt } = req.body;
-    const response = await chatWithMentor(name, prompt);
-    res.send(response);
-})
+mentorRoute(app);
 
 /*Activating Server*/
 app.listen(port, () => {
