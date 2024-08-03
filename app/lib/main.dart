@@ -1,86 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'sign_in_screen.dart'; // Import your sign-in screen
 
-void main() {
-  runApp(const App());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
-class App extends StatefulWidget {
-  const App({super.key});
-
-  @override
-  State<App> createState() => _AppState();
-}
-
-class _AppState extends State<App> {
-  int value = 0;
-
-  void majorIncrement() {
-    setState(() {
-      value += 10;
-    });
-  }
-
-  void minorIncrement() {
-    setState(() {
-      value += 1;
-    });
-  }
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        backgroundColor: Colors.grey[900],
-        appBar: AppBar(
-          backgroundColor: Colors.grey[900],
-          leading: const Icon(
-            Icons.more_vert_outlined,
-            color: Colors.orange,
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(
-                Icons.history,
-                color: Colors.orange,
-              ),
-              onPressed: () {},
-            ),
-          ],
-        ),
-        body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$value',
-              style: const TextStyle(
-                color: Colors.orange,
-                fontSize: 70,
-              ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: FilledButton(
-                    onPressed: majorIncrement,
-                    child: const Text('Major Increment'),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(5),
-                  child: FilledButton(
-                    onPressed: minorIncrement,
-                    child: const Text('Minor Increment'),
-                  ),
-                ),
-              ],
-            )
-          ],
-        )),
-      ),
+      home: SignInScreen(), // Use SignInScreen
     );
   }
 }
