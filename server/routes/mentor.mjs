@@ -4,7 +4,7 @@ import { loadMentor } from '../controller/mentorLogic.mjs';
 const mentorRoute = (app) => {
 
     // Standard Chat Route
-    app.post('/chat/:userID', async (req, res) => {
+    app.post('/mentor/chat/:userID', async (req, res) => {
         // Loading the user ID and prompt from the request
         const { userID } = req.params;
         const { prompt } = req.body;
