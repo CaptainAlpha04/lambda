@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "963109839057",
+    "project_id": "lambda-34f43",
+    "storage_bucket": "lambda-34f43.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:963109839057:android:50246ce899c1e41e0a65f0",
+        "android_client_info": {
+          "package_name": "com.example.project_lambda"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "963109839057-ktv6c32k4t3hvl4p7n7qhd3ajli448lp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.project_lambda",
+            "certificate_hash": "a68889e96c01065b1d50bedee3365d97461d59f7"
+          }
+        },
+        {
+          "client_id": "963109839057-i47valomvu69tke5v43ibpmjgbuj893f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1ec9PFMA-mx70S5bXwpU8bsOXkzhfKG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "963109839057-i47valomvu69tke5v43ibpmjgbuj893f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
