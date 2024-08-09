@@ -19,15 +19,13 @@ function SideBar({ currentPage }: { currentPage: string }) {
     })
     
         return () => unsubscribe();
-    }, [router]);
+      }, [router]);
 
     return (
-        <section id="sideBar" className="w-auto flex flex-col left-0 fixed p-1 bg-base-300 h-full text-base-content justify-between">
+        <section id="sideBar" className="w-auto flex flex-col left-0 fixed p-8 bg-base-300 h-full text-base-content justify-between">
         
-    <div className="flex flex-col gap-2 items-center">
-
-        <Link href="/">
-        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="fill-current h-14 w-14"
+    <div className="flex flex-col gap-2">
+    <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="fill-current h-14 w-14 self-center"
             width="494.000000pt" height="494.000000pt" viewBox="0 0 494.000000 494.000000"
             preserveAspectRatio="xMidYMid meet">
 
@@ -55,64 +53,74 @@ function SideBar({ currentPage }: { currentPage: string }) {
             774 109 226 285 337 513 325 45 -2 108 -13 142 -24z"/>
             </g>
             </svg>
-        </Link>
+        <div className="flex flex-row gap-1 items-center">
+            <h1 className='font-pacifico text-3xl'>Schola</h1>
+            <h1 className='font-light text-3xl'>Dashboard</h1>
+        </div>
+
+
+        <div className="divider"></div>
             
-                <div className="tooltip tooltip-right" data-tip="Dashboard">
+                <div className="tooltip tooltip-right">
                     <Link
-                    href = '/dashboard'
-                    className={`btn ${
+                    href = "/dashboard"
+                    className={`btn flex flex-row w-full justify-start ${
                         currentPage === "dashboard"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}
                     >
                         <i className="fi fi-br-home text-lg"></i>
+                        <h1>Dashboard</h1>
                     </Link>
                 </div>
 
-                <div className="tooltip tooltip-right" data-tip="Create Content">
+                <div className="tooltip tooltip-right">
                     <Link
                     href = "/content"
-                    className={`btn ${
+                    className={`btn flex flex-row w-full justify-start ${
                         currentPage === "content"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}
                     >
                         <i className="fi fi-br-book-plus text-lg"></i>
+                        <h1>Create Content</h1>
                     </Link>
                 </div>
 
-                <div className="tooltip tooltip-right" data-tip="Whiteboard">
+                <div className="tooltip tooltip-right">
                     <Link
-                    href = "/whiteboard"
-                    className={`btn ${
+                    href="/whiteboard"
+                    className={`btn flex flex-row w-full justify-start ${
                         currentPage === "whiteboard"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}
                     >
                         <i className="fi fi-br-signature text-lg"></i>
+                        <h1>Whiteboard</h1>
                     </Link>
                 </div>
 
-                <div className="tooltip tooltip-right" data-tip="Simulation Playground">
+                <div className="tooltip tooltip-right">
                     <Link
                     href = "/simulation"
-                    className={`btn ${
+                    className={`btn flex flex-row w-full justify-start ${
                         currentPage === "simulation"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}
                     >
                         <i className="fi fi-br-physics text-lg"></i>
+                        <h1>Simulation Ground</h1>
                     </Link>
                 </div>
                 
-            <div className="tooltip tooltip-right" data-tip="AI Assistant">
+            <div className="tooltip tooltip-right">
                         <Link
                         href = "/assistant"
-                        className={`btn ${
+                        className={`btn flex flex-row w-full justify-start ${
                             currentPage === "assistant"
                                     ? " btn-primary"
                                     : " btn-ghost"
@@ -128,11 +136,12 @@ function SideBar({ currentPage }: { currentPage: string }) {
                                     </g>
                                 </g>
                                 </svg>
+                            <h1>AI Assistant</h1>
                         </Link>
                     </div>
             </div>
 
-        <div className="bottom-0 p-2 flex flex-col gap-3 w-full justify-between">  
+        <div className="bottom-0 p-2 flex flex-row gap-3 w-full justify-between">  
                     
             <div className="dropdown dropdown-top">
 					<div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">

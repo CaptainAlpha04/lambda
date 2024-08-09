@@ -1,11 +1,11 @@
 import React from 'react'
-import SideBar from '../components/SideBar'
+import SideBar from '../components/SideBarExtended'
 
 function Page() {
 return (
     <>
     <section className='bg-base-100 w-screen h-screen'>
-        <SideBar currentPage='home' />
+        <SideBar currentPage='dashboard' />
     </section>
     </>
 )
