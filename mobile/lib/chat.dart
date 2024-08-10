@@ -56,7 +56,9 @@ Future<void> sendMessage(String message) async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Mentor Chat"),
+        title: Text('NEED GUIDE ? NEO HERE',style:TextStyle(color:Color.fromARGB(255, 203, 167, 211),fontSize: 20,fontWeight: FontWeight.bold)
+        ),
+        
       ),
       body: Column(
         children: [
