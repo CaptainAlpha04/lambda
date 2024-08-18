@@ -77,9 +77,9 @@ function SideBar({ currentPage }: { currentPage: string }) {
 
                 <div className="tooltip tooltip-right">
                     <Link
-                    href = "/content"
+                    href = "/courses"
                     className={`btn flex flex-row w-full justify-start ${
-                        currentPage === "content"
+                        currentPage === "courses"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}

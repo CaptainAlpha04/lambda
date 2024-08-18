@@ -22,11 +22,11 @@ function SideBar({ currentPage }: { currentPage: string }) {
     }, [router]);
 
     return (
-        <section id="sideBar" className="w-auto flex flex-col left-0 fixed p-1 bg-base-300 h-full text-base-content justify-between">
+        <section id="sideBar" className="w-auto flex flex-col left-0 fixed p-1 bg-base-300 h-full text-base-content justify-between z-10">
         
     <div className="flex flex-col gap-2 items-center">
 
-        <Link href="/">
+        <div>
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" className="fill-current h-14 w-14"
             width="494.000000pt" height="494.000000pt" viewBox="0 0 494.000000 494.000000"
             preserveAspectRatio="xMidYMid meet">
@@ -55,7 +55,7 @@ function SideBar({ currentPage }: { currentPage: string }) {
             774 109 226 285 337 513 325 45 -2 108 -13 142 -24z"/>
             </g>
             </svg>
-        </Link>
+        </div>
             
                 <div className="tooltip tooltip-right" data-tip="Dashboard">
                     <Link
@@ -72,9 +72,9 @@ function SideBar({ currentPage }: { currentPage: string }) {
 
                 <div className="tooltip tooltip-right" data-tip="Create Content">
                     <Link
-                    href = "/content"
+                    href = "/courses"
                     className={`btn ${
-                        currentPage === "content"
+                        currentPage === "courses"
                         ? " btn-primary"
                         : " btn-ghost"
                     }`}
