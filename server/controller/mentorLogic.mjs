@@ -1,4 +1,4 @@
-import chatHistory from "../model/chatHistory.mjs";
+import chatHistory from "../model/mentorChatHistory.mjs";
 import { hashChats } from "../security/hashFunctions.mjs";
 import Mentor from "../middleware/mentor.mjs";
 
