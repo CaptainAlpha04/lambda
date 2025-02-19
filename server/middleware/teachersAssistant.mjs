@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { safetySettings } from '../global/settings.mjs';
+import { safetySettings } from '../gobal/settings.mjs';
 import dotenv from 'dotenv';
-import chatHistory from '../model/mentorChatHistory.mjs';
+import chatHistory from '../model/chatHistory.mjs';
 import { unHashChats } from '../security/hashFunctions.mjs';
 import { saveChatHistory } from '../controller/mentorLogic.mjs';
 dotenv.config();
@@ -18,7 +18,7 @@ class Mentor {
 
         if (!this.chat) {
             const chatHistory = await this.loadChatHistory(userID);
-            const model = await genAI.getGenerativeModel({
+            const model = genAI.getGenerativeModel({
                 model: 'gemini-1.5-pro',
                 systemInstruction: this.ActorSystemInstructs,
                 safetySettings,

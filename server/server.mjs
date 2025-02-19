@@ -2,6 +2,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import generateNotes from './routes/generateNotes.mjs';
 
 // Required Files
 import mentorRoute from './routes/mentor.mjs';
@@ -22,7 +23,7 @@ mongoose.connect(process.env.MONGODB_URI)
 
 /* Routes */
 mentorRoute(app);
-
+generateNotes(app);
 /*Activating Server*/
 app.listen(port, () => {
     console.log(`Server is running on port ${port}...`);
