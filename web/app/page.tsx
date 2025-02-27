@@ -1,7 +1,9 @@
 'use client'
 import React from 'react'
+import { useRouter } from "next/navigation";
 
 function Page() {
+  const router = useRouter();
   const uploadBook = async () => {
     const fileInput = document.querySelector('#upload-book') as HTMLInputElement;
     if (!fileInput?.files?.length) return;
@@ -28,6 +30,9 @@ function Page() {
       <label htmlFor="upload-book">Upload a book</label>
       <input type="file" id="upload-book" className='input file-input-md input-primary' accept=".pdf"/>
       <button className='btn btn-primary' onClick={uploadBook}>Upload</button>
+      <button className="btn btn-secondary" onClick={() => router.push("/whiteboard")}>
+        Go to Whiteboard
+      </button>
     </section>
   );
 }

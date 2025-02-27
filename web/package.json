@@ -10,10 +10,21 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@radix-ui/react-slot": "^1.1.2",
+    "@shadcn/ui": "^0.0.4",
+    "@types/fabric": "^5.3.10",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
+    "fabric": "^6.6.1",
+    "konva": "^9.3.18",
+    "lucide-react": "^0.476.0",
     "next": "15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-konva": "^19.0.3",
+    "tailwind-merge": "^3.0.2",
+    "tailwindcss-animate": "^1.0.7",
     "web": "file:"
   },
   "devDependencies": {
