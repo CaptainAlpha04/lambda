@@ -37,3 +37,15 @@ export function cleanJSON(content) {
     }
 }
 
+// converts a JSON objects to an array
+export function convert2Array(objects) {
+    if (!Array.isArray(objects)) {
+        return null;
+    }
+    
+    return objects.reduce((acc, object) => {
+        const [key, value] = Object.entries(object)[0];
+        acc[value] = key;
+        return acc;
+    }, {});
+}

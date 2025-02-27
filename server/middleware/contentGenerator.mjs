@@ -1,11 +1,12 @@
 import fs from 'fs';
-import path from 'path';
+import path, { parse } from 'path';
 import os from 'os';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { safetySettings } from '../global/settings.mjs';
 import { GoogleAIFileManager } from '@google/generative-ai/server';
-import { cleanJSON } from '../lib/jsonCleaner.mjs';
+import { cleanJSON, convert2Array } from '../lib/jsonfx.mjs';
 import dotenv from 'dotenv';
+import { checkPrime } from 'crypto';
 dotenv.config();
 
 class generateNotesClass {
@@ -48,8 +49,7 @@ class generateNotesClass {
             console.log("File uploaded successfully:", uploadFile);
             
             // Generate notes
-            this.getChapters(uploadFile);
-
+            this.controller(uploadFile);
 
         } catch (error) {
             console.error("Error processing file:", error);
@@ -66,6 +66,14 @@ class generateNotesClass {
         }
     }
 
+    // Controls the flow of note generation
+    async controller(uploadedFile) {
+        // Get chapters from notes
+        const chaptersArray = await this.getChapters(uploadedFile);
+
+        return;
+    }
+
     async getChapters(uploadedFile) {
         // Get chapters from notes
         const chaptersArray = [];
@@ -73,23 +81,35 @@ class generateNotesClass {
         const chapterResponse = await this.chat.sendMessage([
             {
                 fileData: {
-                    fileUri: "https://generativelanguage.googleapis.com/v1beta/files/dz5034shnkp7" || uploadedFile.file.uri,
-                    mimeType: "application/pdf" || uploadedFile.file.mimeType
+                    fileUri:  uploadedFile.file.uri,
+                    mimeType: uploadedFile.file.mimeType
                 },
             },
-            'List all the chapter names from notes strictly in JSON format'
+            'List all the chapter names from notes with key as Unit 1. Unit 2 etc'
         ]);
-
+            
+        // convert chapterResponse to JSON
         const chapterText = chapterResponse.response.text();
+        console.log(chapterText);
+        const parsedJSON = cleanJSON(chapterText);
+        console.log(parsedJSON);
+        
+        const totalChapters = Object.keys(parsedJSON.chapters).length;
+        console.log(`Total number of chapters: ${totalChapters}`);
+        console.log(parsedJSON.chapters['Unit 1'] || parsedJSON.chapters['Chapter 1'])
 
-        const cleanedJSON = cleanJSON(chapterText);
-        if (Array.isArray(cleanedJSON.chapters)) {
-            chaptersArray.push(...cleanedJSON);
+        // Transform the chapters array into a cleaner Array format
+        if (parsedJSON && parsedJSON.chapters) {
+            const transformedChapters = convert2Array(parsedJSON.chapters);
+            if (transformedChapters) {
+                chaptersArray.push({ chapters: transformedChapters });
+            }
         } else {
-            console.error("cleanedJSON is not an array:", cleanedJSON);
+            console.error("Invalid JSON structure:", parsedJSON);
         }
+        
         console.log(chaptersArray);
-        return chaptersArray;
+        return chaptersArray
     }
 }
 
