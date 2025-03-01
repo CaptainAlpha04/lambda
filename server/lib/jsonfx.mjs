@@ -18,18 +18,6 @@ export function cleanJSON(content) {
 
         // Parse the cleaned content
         const parsedJSON = JSON.parse(cleanContent);
-
-        // Optional: Transform the chapters array into a cleaner format
-        if (parsedJSON.chapters) {
-            const cleanChapters = parsedJSON.chapters.reduce((acc, chapter) => {
-                const [unit, title] = Object.entries(chapter)[0];
-                acc[unit] = title;
-                return acc;
-            }, {});
-            
-            return { chapters: cleanChapters };
-        }
-
         return parsedJSON;
     } catch (error) {
         console.error('Error parsing JSON:', error);

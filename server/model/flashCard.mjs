@@ -8,7 +8,6 @@ const flashCardSchema = new mongoose.Schema({
     question: String,
     hint: String,
     answer: String,
-    KeyPoints: String,
 });
 
 const FlashCard = mongoose.model('flashCard', flashCardSchema);
