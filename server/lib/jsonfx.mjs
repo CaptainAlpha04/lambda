@@ -18,18 +18,6 @@ export function cleanJSON(content) {
 
         // Parse the cleaned content
         const parsedJSON = JSON.parse(cleanContent);
-
-        // Optional: Transform the chapters array into a cleaner format
-        if (parsedJSON.chapters) {
-            const cleanChapters = parsedJSON.chapters.reduce((acc, chapter) => {
-                const [unit, title] = Object.entries(chapter)[0];
-                acc[unit] = title;
-                return acc;
-            }, {});
-            
-            return { chapters: cleanChapters };
-        }
-
         return parsedJSON;
     } catch (error) {
         console.error('Error parsing JSON:', error);
@@ -37,3 +25,15 @@ export function cleanJSON(content) {
     }
 }
 
+// converts a JSON objects to an array
+export function convert2Array(objects) {
+    if (!Array.isArray(objects)) {
+        return null;
+    }
+    
+    return objects.reduce((acc, object) => {
+        const [key, value] = Object.entries(object)[0];
+        acc[value] = key;
+        return acc;
+    }, {});
+}
