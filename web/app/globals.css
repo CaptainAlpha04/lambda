@@ -119,3 +119,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Add these styles */
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+.space-y-4 > * + * {
+  margin-top: 1rem;
+}
