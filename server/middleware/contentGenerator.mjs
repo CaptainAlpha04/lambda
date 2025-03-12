@@ -6,9 +6,8 @@ import { safetySettings } from '../global/settings.mjs';
 import { GoogleAIFileManager } from '@google/generative-ai/server';
 import { cleanJSON, convert2Array } from '../lib/jsonfx.mjs';
 import mongoose from 'mongoose';
-import Notes from '../models/notes.js';
-import FlashCards from '../models/flashCards.js';
-import MCQs from '../models/mcqs.js';
+import FlashCards from '../model/flashCard.mjs';
+import MCQs from '../model/mcqSchema.mjs';
 import dotenv from 'dotenv';
 dotenv.config();
 
