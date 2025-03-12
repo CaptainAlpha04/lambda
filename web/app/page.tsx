@@ -33,6 +33,9 @@ function Page() {
       <button className="btn btn-secondary" onClick={() => router.push("/whiteboard")}>
         Go to Whiteboard
       </button>
+      <button className="btn btn-secondary" onClick={() => router.push("/chemlab")}>
+        Go to Chemistry Lab
+      </button>
     </section>
   );
 }

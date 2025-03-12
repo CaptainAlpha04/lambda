@@ -1,3 +1,5 @@
+"use client"
+import { useState } from "react"
 import { Pen, Eraser, Square, Circle, Image, Undo, Redo } from "lucide-react"
 
 const tools = [
@@ -8,11 +10,29 @@ const tools = [
   { name: "Image", icon: Image },
 ]
 
-const Sidebar = () => {
+interface SidebarProps {
+  setSelectedTool: (tool: string) => void
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ setSelectedTool }) => {
+  const [activeTool, setActiveTool] = useState("Pen")
+
+  const handleToolClick = (tool: string) => {
+    setActiveTool(tool)
+    setSelectedTool(tool)
+  }
+
   return (
     <div className="w-16 bg-white shadow-md flex flex-col items-center py-4 space-y-4">
       {tools.map((tool) => (
-        <button key={tool.name} className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title={tool.name}>
+        <button
+          key={tool.name}
+          className={`p-2 rounded-lg transition-colors ${
+            activeTool === tool.name ? "bg-gray-200" : "hover:bg-gray-100"
+          }`}
+          title={tool.name}
+          onClick={() => handleToolClick(tool.name)}
+        >
           <tool.icon className="w-6 h-6 text-gray-600" />
         </button>
       ))}
@@ -28,4 +48,3 @@ const Sidebar = () => {
 }
 
 export default Sidebar
-
