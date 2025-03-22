@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Bold, Italic, Underline, Heading1, Link, ChevronDown, TextIcon, Heading2, Heading3 } from 'lucide-react'
+import { Bold, Italic, Underline, Heading1, Link, ChevronDown, TextIcon, Heading2, Heading3, List } from 'lucide-react'
 
 interface BubbleBarProps {
   onFormat: (formatType: string, value?: string) => void;
@@ -16,7 +16,8 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
   };
 
   return (
-    <div className='bg-white border border-gray-300 rounded-lg shadow-md p-2 w-96 flex gap-2'>
+    <div className='bg-white border rounded-lg shadow-md p-2 w-96 flex gap-2 absolute top-[-14] left-60 transform -translate-x-1/2 -translate-y-1/2'
+    onMouseDown={(e) => e.preventDefault()}>
       
       {/* Bold */}
       <button 
@@ -42,17 +43,7 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
           <Underline size={14} />
         </button>
 
-      {/* <select 
-        className='border border-gray-300 rounded-md p-1 bg-slate-100 select select-sm w-28'
-        onChange={(e) => onFormat('formatBlock', e.target.value)}
-      >
-        <option value='p'>Normal</option>
-        <option value='h1'>Heading 1</option>
-        <option value='h2'>Heading 2</option>
-        <option value='h3'>Heading 3</option>
-      </select> */}
-
-      {/* Custom dropdown styled like a select */}
+      {/* dropdown styled for block format */}
       <div className="relative inline-block">
         <div
           className="border border-gray-300 rounded-md p-1 bg-slate-100 text-sm flex items-center justify-between w-32 cursor-pointer"
@@ -93,6 +84,15 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
                 <Heading3 size={16} />
                 Heading 3
               </li>
+              
+              <li 
+                className="px-3 py-2 text-sm hover:bg-slate-100 cursor-pointer flex items-center gap-2"
+                onClick={() => handleFormatClick('formatBlock', 'ol', 'List items')}
+              >
+                <List size={16} />
+                List
+              </li>
+
 
             </ul>
           </div>

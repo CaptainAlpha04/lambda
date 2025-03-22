@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { PlusCircle } from 'lucide-react'
 import Block from './Block'
+import { initialize } from 'next/dist/server/lib/render-server'
 
 function Editor() {
   // Use an array of IDs instead of ReactNodes for better control
   const [blockIds, setBlockIds] = useState<string[]>(['block-0'])
   const [focusIndex, setFocusIndex] = useState<number>(0)
+  const [blockContent, setBlockContent] = useState<{[key: string]: string}>({})
   
   // Use refs to access and manage block elements
   const blockRefs = useRef<{[key: string]: React.RefObject<HTMLDivElement | null>}>({})
@@ -38,7 +40,11 @@ function Editor() {
     }
   }, [focusIndex, blockIds])
 
-  const addBlock = (index: number) => {
+  useEffect(() => {
+    console.log('blockContent', blockContent)
+  },[blockContent])
+
+  const addBlock = (index: number, initialContent: string = '') => {
     const newId = `block-${Date.now()}`
     
     // Create a new ref for the new block
@@ -48,7 +54,22 @@ function Editor() {
     const newBlocks = [...blockIds]
     newBlocks.splice(index + 1, 0, newId)
     
+    // Update block contents
+    if (initialContent) {
+      // Add the initial content to the new block
+      console.log('initialContent', initialContent)
+      
+      const updatedBlockContent = {
+        ...blockContent,
+        [newId]: initialContent
+      };
+      
+      // Set the state with the new object
+      setBlockContent(updatedBlockContent);
+    }
+
     setBlockIds(newBlocks)
+
     // Set focus to the new block
     setFocusIndex(index + 1)
   }
@@ -59,13 +80,14 @@ function Editor() {
         <div key={id} ref={blockRefs.current[id]}>
           <Block 
             id={id}
-            createNewBlock={() => addBlock(index)}
+            createNewBlock={(initialContent) => addBlock(index, initialContent)}
+            initialContent={blockContent[id] || ''}
           />
         </div>
       ))}
       
       <button 
-        onClick={() => addBlock(blockIds.length - 1)}
+        onClick={() => addBlock(blockIds.length - 1, '')}
         className='btn mt-4'
       >
         <PlusCircle size={20}/>

@@ -146,3 +146,15 @@ p {
   @apply text-base;
 }
 
+ol {
+  @apply list-decimal list-inside;
+}
+
+ul {
+  @apply list-disc list-inside;
+}
+
+li {
+  @apply text-base;
+}
+
