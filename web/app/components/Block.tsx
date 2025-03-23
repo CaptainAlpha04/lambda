@@ -1,37 +1,37 @@
 import React, {useState, useEffect, useRef, forwardRef} from 'react'
-import BubbleBar from './BubbleBar';
-import dynamic from 'next/dynamic';
+import BubbleBar from './BubbleBar' 
 
 interface BlockProps {
-    id: string;
-    createNewBlock: (initialContent?: string) => void;
-    initialContent?: string;
+    id: string 
+    createNewBlock: (initialContent?: string) => void 
+    deletePreviousBlock: () => void 
+    initialContent?: string 
 }
 
-function Block({id, createNewBlock, initialContent = ''}: BlockProps) {
+function Block({id, createNewBlock, deletePreviousBlock, initialContent = ''}: BlockProps) {
     const [contentTag, setContenTag] = useState<string>('p')
     const [bubbleBar, setBubbleBar] = useState<boolean>(false)
     const [content, setContent] = useState<string>('')
     const [isBubbleBarHovered, setIsBubbleBarHovered] = useState<boolean>(false)
-    const contentRef = useRef<HTMLDivElement>(null);
-    const bubbleBarRef = useRef<HTMLDivElement>(null);
+    const contentRef = useRef<HTMLDivElement>(null) 
+    const bubbleBarRef = useRef<HTMLDivElement>(null) 
 
-    type ValidHTMLTags = 'p' | 'h1' | 'h2' | 'h3' | 'div';
-    const DynamicTag = contentTag as ValidHTMLTags;
-
-    useEffect(() => {
-        if (initialContent) {
-            contentRef.current!.innerHTML = initialContent;
-        }
-    }, [])
+    type ValidHTMLTags = 'p' | 'h1' | 'h2' | 'h3' | 'div' 
+    const DynamicTag = contentTag as ValidHTMLTags 
 
     useEffect(() => {
         contentRef.current!.innerHTML = `<${contentTag}>${content}</${contentTag}>`
     }, [contentTag, content])
+    
+    useEffect(() => {
+        if (initialContent) {
+            contentRef.current!.innerHTML = initialContent
+        }
+    }, [])
 
     const handleFormat = (formatType: string, value?: string) => {
         if (formatType === 'formatBlock') {
-            setContent(contentRef.current!.innerHTML);
+            setContent(contentRef.current!.innerHTML)
             setContenTag(value!)
         }
 
@@ -50,47 +50,54 @@ function Block({id, createNewBlock, initialContent = ''}: BlockProps) {
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
+            e.preventDefault() 
             
             // if the block is empty do nothing
             if (!contentRef.current?.textContent) {
-                return;
+                return 
             }
 
             // if the block is a list item, go to the next line and create a new list item
             if (contentTag === 'ol' || contentTag === 'ul') {
-                document.execCommand('insertHTML', false, '<li><br></li>');
-                return;
+                document.execCommand('insertHTML', false, '<li><br/></li>') 
+                return 
             }
 
             // Store cursor position/selection for potential content split
-            const selection = window.getSelection();
-            const range = selection?.getRangeAt(0);
+            const selection = window.getSelection() 
+            const range = selection?.getRangeAt(0) 
 
             // Split the content into two block
-            const content = contentRef.current.innerHTML;
-            const contentBeforeCaret = content.substring(0, range?.startOffset!);
-            const contentAfterCaret = content.substring(range?.startOffset!);
+            const content = contentRef.current.innerHTML 
+            const contentBeforeCaret = content.substring(0, range?.startOffset!) 
+            const contentAfterCaret = content.substring(range?.startOffset!) 
 
             // Update the current block with the content before the caret
-            contentRef.current.innerHTML = contentBeforeCaret;
+            contentRef.current.innerHTML = contentBeforeCaret 
 
             if (contentAfterCaret) {
                 // Create a new block with the content after the caret
-                initialContent = contentAfterCaret;
-                createNewBlock(initialContent);
-                return;
+                initialContent = contentAfterCaret 
+                createNewBlock(initialContent) 
+                return 
             }
             
             // Call function to create new block
-            createNewBlock();
+            createNewBlock() 
+        }
+
+
+        // if the user presses backspace on an empty block, delete the block and focus on the previous one
+        if (e.key === 'Backspace' && !contentRef.current?.textContent) {
+            e.preventDefault() 
+            deletePreviousBlock() 
         }
     }
 
     // Function to manage bubbleBar
     const hideBubbleBar = () => {
         if (!isBubbleBarHovered) {
-            setBubbleBar(false);
+            setBubbleBar(false) 
         }
     }
 
@@ -106,19 +113,19 @@ function Block({id, createNewBlock, initialContent = ''}: BlockProps) {
                 </div>
             )}
             <DynamicTag 
-                className='p-2 bg-slate-50 focus:bg-gray-100 min-h-10'
+                className='p-2 focus:bg-slate-50 min-h-10'
                 contentEditable={true}
                 suppressContentEditableWarning={true}
                 ref={contentRef}
                 onKeyDown={handleKeyDown}
                 onSelect={() => {
-                    const selection = window.getSelection();
+                    const selection = window.getSelection() 
                     if (selection && selection.toString().length > 0) {
-                        setBubbleBar(true);
+                        setBubbleBar(true) 
                     }
                 }}
                 onBlur={() => {
-                    setTimeout(() => setBubbleBar(false), 200);
+                    setTimeout(() => setBubbleBar(false), 200) 
                 }}
                 data-block-id={id}
                 />

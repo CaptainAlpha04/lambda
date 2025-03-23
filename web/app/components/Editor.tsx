@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { PlusCircle } from 'lucide-react'
 import Block from './Block'
-import { initialize } from 'next/dist/server/lib/render-server'
-
 function Editor() {
   // Use an array of IDs instead of ReactNodes for better control
   const [blockIds, setBlockIds] = useState<string[]>(['block-0'])
@@ -62,16 +60,24 @@ function Editor() {
       const updatedBlockContent = {
         ...blockContent,
         [newId]: initialContent
-      };
+      }
       
       // Set the state with the new object
-      setBlockContent(updatedBlockContent);
+      setBlockContent(updatedBlockContent)
     }
 
     setBlockIds(newBlocks)
 
     // Set focus to the new block
     setFocusIndex(index + 1)
+  }
+
+  const deleteBlock = (index: number) => {
+    if (blockIds.length === 1) return
+    const newBlocks = [...blockIds]
+    newBlocks.splice(index, 1)
+    setBlockIds(newBlocks)
+    setFocusIndex(index - 1)
   }
 
   return (
@@ -82,6 +88,7 @@ function Editor() {
             id={id}
             createNewBlock={(initialContent) => addBlock(index, initialContent)}
             initialContent={blockContent[id] || ''}
+            deletePreviousBlock={() => deleteBlock(index)}
           />
         </div>
       ))}
@@ -93,6 +100,8 @@ function Editor() {
         <PlusCircle size={20}/>
         Add block
       </button>
+
+
     </section>
   )
 }
