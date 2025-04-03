@@ -16,7 +16,7 @@ function Block({id, createNewBlock, deletePreviousBlock, initialContent = ''}: B
     const contentRef = useRef<HTMLDivElement>(null) 
     const bubbleBarRef = useRef<HTMLDivElement>(null) 
 
-    type ValidHTMLTags = 'p' | 'h1' | 'h2' | 'h3' | 'div' 
+    type ValidHTMLTags = 'p' | 'h1' | 'h2' | 'h3' | 'div'
     const DynamicTag = contentTag as ValidHTMLTags 
 
     useEffect(() => {
@@ -66,7 +66,7 @@ function Block({id, createNewBlock, deletePreviousBlock, initialContent = ''}: B
             // Store cursor position/selection for potential content split
             const selection = window.getSelection() 
             const range = selection?.getRangeAt(0) 
-
+            
             // Split the content into two block
             const content = contentRef.current.innerHTML 
             const contentBeforeCaret = content.substring(0, range?.startOffset!) 
