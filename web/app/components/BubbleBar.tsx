@@ -1,5 +1,9 @@
 import React, { useState } from 'react'
-import { Bold, Italic, Underline, Heading1, Link, ChevronDown, TextIcon, Heading2, Heading3, List } from 'lucide-react'
+import { 
+  Bold, Italic, Underline, Heading1, Link, ChevronDown, TextIcon, 
+  Heading2, Heading3, List, AlignLeft, AlignCenter, AlignRight, 
+  AlignJustify, Quote, Code, Strikethrough, ListOrdered
+} from 'lucide-react'
 
 interface BubbleBarProps {
   onFormat: (formatType: string, value?: string) => void;
@@ -8,6 +12,7 @@ interface BubbleBarProps {
 function BubbleBar({ onFormat }: BubbleBarProps) {
   const [dropdownLabel, setDropdownLabel] = useState('Text');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isAlignDropdownOpen, setIsAlignDropdownOpen] = useState(false);
 
   const handleFormatClick = (formatType: string, value: string, label: string) => {
     onFormat(formatType, value);
@@ -16,32 +21,104 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
   };
 
   return (
-    <div className='bg-white border rounded-lg shadow-md p-2 w-96 flex gap-2 absolute top-[-14] left-60 transform -translate-x-1/2 -translate-y-1/2'
+    <div className='bg-white border rounded-lg shadow-md p-2 flex gap-2 absolute top-[-14] left-60 transform -translate-x-1/2 -translate-y-1/2 flex-wrap w-auto font-poppins'
     onMouseDown={(e) => e.preventDefault()}>
       
-      {/* Bold */}
-      <button 
+      {/* Basic Formatting */}
+      <div className="flex gap-1 border-r pr-1">
+        {/* Bold */}
+        <button 
           onClick={() => onFormat('bold')}
           className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Bold'
         >
           <Bold size={14} />
         </button>
 
-      {/* Italics */}
-      <button 
+        {/* Italics */}
+        <button 
           onClick={() => onFormat('italic')}
-          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm ' data-tip='Italic'
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Italic'
         >
           <Italic size={14} />
         </button>
 
-      {/* Underline - fixed comment */}
-      <button 
+        {/* Underline */}
+        <button 
           onClick={() => onFormat('underline')}
           className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Underline'
         >
           <Underline size={14} />
         </button>
+
+        {/* Strikethrough */}
+        <button 
+          onClick={() => onFormat('strikethrough')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Strikethrough'
+        >
+          <Strikethrough size={14} />
+        </button>
+      </div>
+
+
+      {/* Alignment Options */}
+      <div className="flex gap-1 border-r pr-1">
+        <button 
+          onClick={() => onFormat('justifyLeft')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Align Left'
+        >
+          <AlignLeft size={14} />
+        </button>
+        <button 
+          onClick={() => onFormat('justifyCenter')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Center'
+        >
+          <AlignCenter size={14} />
+        </button>
+        <button 
+          onClick={() => onFormat('justifyRight')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Align Right'
+        >
+          <AlignRight size={14} />
+        </button>
+        <button 
+          onClick={() => onFormat('justifyFull')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Justify'
+        >
+          <AlignJustify size={14} />
+        </button>
+      </div>
+
+      {/* List Options */}
+      <div className="flex gap-1 border-r pr-1">
+        <button 
+          onClick={() => onFormat('insertUnorderedList')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Bullet List'
+        >
+          <List size={14} />
+        </button>
+        <button 
+          onClick={() => onFormat('insertOrderedList')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Numbered List'
+        >
+          <ListOrdered size={14} />
+        </button>
+      </div>
+
+      {/* Special Formatting */}
+      <div className="flex gap-1 border-r pr-1">
+        <button 
+          onClick={() => onFormat('formatBlock', 'blockquote')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Quote'
+        >
+          <Quote size={14} />
+        </button>
+        <button 
+          onClick={() => onFormat('formatBlock', 'pre')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Code Block'
+        >
+          <Code size={14} />
+        </button>
+      </div>
 
       {/* dropdown styled for block format */}
       <div className="relative inline-block">
@@ -84,16 +161,6 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
                 <Heading3 size={16} />
                 Heading 3
               </li>
-              
-              <li 
-                className="px-3 py-2 text-sm hover:bg-slate-100 cursor-pointer flex items-center gap-2"
-                onClick={() => handleFormatClick('formatBlock', 'ol', 'List items')}
-              >
-                <List size={16} />
-                List
-              </li>
-
-
             </ul>
           </div>
         )}
