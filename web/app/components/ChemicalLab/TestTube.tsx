@@ -56,8 +56,9 @@ export const TestTube = ({
 
     return (
         <motion.div
-            className={cn(
-                "test-tube-container relative w-28 h-64 group z-10",
+             className={cn(
+                "test-tube-container relative w-28 h-64 group",
+                "hover:z-[60] z-40", // Key change: Dynamic z-index on hover
                 draggable && "cursor-grab active:cursor-grabbing",
             )}
             initial={{ opacity: 0, y: 20 }}
@@ -146,10 +147,11 @@ export const TestTube = ({
 
                 {/* Chemical Info Card */}
                 <div
-                    className="absolute bottom-[-80px] left-1/2 -translate-x-1/2 w-72
-      opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30
-      pointer-events-none"
+                    className="absolute bottom-[-100px] left-1/2 -translate-x-1/2 w-72
+      opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-[999]
+      pointer-events-none group-hover:pointer-events-auto"
                 >
+
                     <div
                         className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md p-4 rounded-xl
         shadow-2xl border border-slate-700/50"

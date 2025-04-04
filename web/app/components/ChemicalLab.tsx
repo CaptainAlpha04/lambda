@@ -208,13 +208,13 @@ export default function ChemicalLab() {
             {/* Lab Workbench */}
             <div
               ref={workbenchRef}
-              className="lab-workbench mt-8 min-h-[500px] rounded-xl p-8 relative
+              className="lab-workbench mt-8 min-h-[700px] rounded-xl p-8 relative
                 bg-gradient-to-b from-slate-800/70 to-slate-900/70 backdrop-blur-md
                 border border-slate-700/30 shadow-2xl overflow-hidden"
             >
               {/* 3D Lab Table Effect */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.05)_0,transparent_70%)]" />
-              <div className="absolute inset-0 bg-[url('/textures/lab-table.jpeg')] opacity-10 bg-cover mix-blend-overlay" />
+              <div className="absolute inset-0 bg-[url('/textures/lab-table.jpg')] opacity-10 bg-cover mix-blend-overlay" />
 
               {/* Grid Lines */}
               <div
@@ -225,7 +225,7 @@ export default function ChemicalLab() {
               />
 
               {/* Reaction Area */}
-              <div className="relative z-10">
+              <div className="relative z-10 top-40">
                 <div className="flex flex-wrap items-center gap-8 justify-center">
                   <AnimatePresence>
                     {selectedChemicals.map((chemical, index) => (
