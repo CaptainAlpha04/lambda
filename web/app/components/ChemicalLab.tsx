@@ -3,6 +3,13 @@ import { useState, useRef, useEffect } from "react"
 import type React from "react"
 import { generateResponse } from "../lib/gemini"
 import { motion, AnimatePresence, useAnimation, useMotionValue } from "framer-motion"
+import { ChemicalSelector } from "./ChemicalLab/ChemicalSelector"
+import { TestTube } from "./ChemicalLab/TestTube"
+import { ParticleEffect } from "./ChemicalLab/ParticleEffect"
+import { LabHelp } from "./ChemicalLab/LabHelp";
+import { ExportData } from "./ChemicalLab/ExportData";
+import { LabNotebook } from "./ChemicalLab/LabNotebook"
+import { PeriodicElement } from "./ChemicalLab/PeriodicElement"
 import {
   Beaker,
   FlaskRoundIcon as Flask,
@@ -21,457 +28,11 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { Chemical } from "./ChemicalLab/types"
+import { Reaction } from "./ChemicalLab/types"
+import { playSoundEffect } from "./ChemicalLab/utils"
 
-interface Chemical {
-  name: string
-  color: string
-  formula?: string
-  state_at_room_temp?: string
-  safety_info?: string
-}
 
-interface Reaction {
-  chemicals: Chemical[]
-  result: Chemical
-  timestamp: number
-}
-
-// Sound effects
-const playSoundEffect = (type: "add" | "mix" | "success" | "error") => {
-  const sounds = {
-    add: new Audio("/sounds/bubble.mp3"),
-    mix: new Audio("/sounds/pour.mp3"),
-    success: new Audio("/sounds/success.mp3"),
-    error: new Audio("/sounds/error.mp3"),
-  }
-
-  try {
-    sounds[type].volume = 0.3
-    sounds[type].play()
-  } catch (e) {
-    console.log("Sound not loaded yet")
-  }
-}
-
-// Particle effect component for reactions
-const ParticleEffect = ({ active, color }: { active: boolean; color: string }) => {
-  const particleCount = 30
-  const particles = Array.from({ length: particleCount })
-
-  if (!active) return null
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {particles.map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute w-2 h-2 rounded-full"
-          style={{
-            backgroundColor: color,
-            boxShadow: `0 0 6px 2px ${color}80`,
-          }}
-          initial={{
-            x: "50%",
-            y: "100%",
-            opacity: 1,
-          }}
-          animate={{
-            x: `${Math.random() * 100}%`,
-            y: `${Math.random() * 100}%`,
-            opacity: 0,
-            scale: [1, Math.random() * 0.5 + 0.5],
-          }}
-          transition={{
-            duration: 1 + Math.random() * 2,
-            ease: "easeOut",
-            delay: Math.random() * 0.5,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-// 3D Test Tube Component
-const TestTube = ({
-  chemical,
-  isResult = false,
-  onRemove,
-  draggable = false,
-}: {
-  chemical: Chemical
-  isResult?: boolean
-  onRemove?: () => void
-  draggable?: boolean
-}) => {
-  const controls = useAnimation()
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
-
-  // Simulate 3D tilt effect on hover
-  const handleHoverStart = () => {
-    controls.start({
-      rotateY: [0, 5, 0, -5, 0],
-      transition: { duration: 2, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-    })
-  }
-
-  const handleHoverEnd = () => {
-    controls.stop()
-    controls.start({ rotateY: 0 })
-  }
-
-  // Liquid fill animation
-  useEffect(() => {
-    controls.start({
-      height: ["0%", "80%"],
-      transition: { duration: 1.5, ease: "easeOut" },
-    })
-  }, [controls])
-
-  return (
-    <motion.div
-      className={cn(
-        "test-tube-container relative w-28 h-64 group z-10",
-        draggable && "cursor-grab active:cursor-grabbing",
-      )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.05 }}
-      onHoverStart={handleHoverStart}
-      onHoverEnd={handleHoverEnd}
-      style={{ x, y }}
-      drag={draggable}
-      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-      dragElastic={0.1}
-      dragTransition={{ bounceStiffness: 300, bounceDamping: 20 }}
-    >
-      <div className="relative w-full h-full perspective-[1000px]">
-        {/* 3D Test Tube Container */}
-        <motion.div className="absolute inset-0 flex flex-col items-center" animate={controls}>
-          {/* Glass tube */}
-          <div className="relative w-full h-full">
-            {/* Tube neck */}
-            <div
-              className="absolute top-0 w-1/2 h-[15%] bg-gradient-to-b from-white/30 to-white/10 
-              left-1/4 rounded-t-xl backdrop-blur-sm border-t border-l border-r border-white/20 z-10"
-            />
-
-            {/* Tube body */}
-            <div
-              className="absolute top-[15%] w-full h-[85%] rounded-b-2xl overflow-hidden
-              bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm
-              border border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)]"
-            >
-              {/* Liquid */}
-              <motion.div
-                className={cn(
-                  "absolute bottom-0 w-full rounded-b-xl transition-all duration-300",
-                  isResult && "border-t-2 border-yellow-400/50",
-                )}
-                style={{
-                  backgroundColor: chemical.color,
-                  backgroundImage: `
-                    linear-gradient(to right, 
-                      ${chemical.color}80, 
-                      ${chemical.color}, 
-                      ${chemical.color}80
-                    ),
-                    linear-gradient(to bottom, transparent 60%, rgba(0,0,0,0.3))
-                  `,
-                  boxShadow: `0 -5px 15px ${chemical.color}50 inset`,
-                  height: "0%",
-                }}
-                animate={controls}
-              />
-
-              {/* Glass reflections */}
-              <div className="absolute inset-0 opacity-30">
-                <div className="absolute top-0 left-[10%] w-[1px] h-full bg-gradient-to-b from-white to-transparent" />
-                <div className="absolute top-0 left-[30%] w-[1px] h-[70%] bg-gradient-to-b from-white to-transparent" />
-              </div>
-            </div>
-
-            {/* Chemical label */}
-            <div className="absolute -top-8 left-1/2 -translate-x-1/2 z-20">
-              <div
-                className="bg-slate-800/90 backdrop-blur-sm px-3 py-1 rounded-full 
-                text-white text-xs font-mono shadow-lg border border-slate-700/50
-                flex items-center gap-1.5"
-              >
-                <span className="w-2 h-2 rounded-full" style={{ backgroundColor: chemical.color }} />
-                <span>{chemical.formula || chemical.name}</span>
-              </div>
-            </div>
-
-            {/* Remove button for selected chemicals */}
-            {onRemove && (
-              <motion.button
-                className="absolute -top-2 -right-2 bg-red-500/80 text-white rounded-full p-1
-                  opacity-0 group-hover:opacity-100 transition-opacity z-30"
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={onRemove}
-              >
-                <Trash2 className="w-3 h-3" />
-              </motion.button>
-            )}
-          </div>
-        </motion.div>
-
-      {/* Chemical Info Card */}
-<div
-  className="absolute bottom-[-80px] left-1/2 -translate-x-1/2 w-72
-    opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30
-    pointer-events-none"
->
-  <div
-    className="bg-gradient-to-br from-slate-800/95 to-slate-900/95 backdrop-blur-md p-4 rounded-xl
-      shadow-2xl border border-slate-700/50"
-  >
-    <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-      <span className="w-2 h-6 rounded-full" style={{ backgroundColor: chemical.color }} />
-      {chemical.name}
-    </h3>
-
-    <div className="space-y-2">
-      {chemical.formula && (
-        <div className="flex items-center gap-2">
-          <span className="text-blue-400">
-            <Atom className="w-4 h-4" />
-          </span>
-          <p className="text-sm text-gray-300">
-            Formula: <span className="font-mono text-blue-300">{chemical.formula}</span>
-          </p>
-        </div>
-      )}
-
-      {chemical.state_at_room_temp && (
-        <div className="flex items-center gap-2">
-          <span className="text-green-400">
-            <Droplets className="w-4 h-4" />
-          </span>
-          <p className="text-sm text-gray-300">State: {chemical.state_at_room_temp}</p>
-        </div>
-      )}
-
-      {chemical.safety_info && (
-        <div className="mt-3 p-3 bg-red-900/30 rounded-lg">
-          <div className="flex items-center gap-2 text-red-400">
-            <AlertTriangle className="w-4 h-4" />
-            <p className="text-sm font-medium">{chemical.safety_info}</p>
-          </div>
-        </div>
-      )}
-    </div>
-  </div>
-</div>
-
-      </div>
-    </motion.div>
-  )
-}
-
-// Chemical Selector Component
-const ChemicalSelector = ({ onSelect }: { onSelect: (name: string) => Promise<Chemical> }) => {
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [suggestions, setSuggestions] = useState<string[]>([
-    "Sodium Chloride",
-    "Hydrochloric Acid",
-    "Sodium Hydroxide",
-    "Copper Sulfate",
-    "Potassium Permanganate",
-    "Silver Nitrate",
-    "Calcium Carbonate",
-    "Magnesium",
-    "Zinc",
-  ])
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (input.trim()) {
-      setIsLoading(true)
-      await onSelect(input.trim())
-      setIsLoading(false)
-      setInput("")
-      playSoundEffect("add")
-    }
-  }
-
-  const handleSuggestionClick = async (suggestion: string) => {
-    setIsLoading(true)
-    await onSelect(suggestion)
-    setIsLoading(false)
-    playSoundEffect("add")
-  }
-
-  return (
-    <div className="chemical-selector-container backdrop-blur-md bg-slate-900/70 rounded-xl p-6 border border-slate-800/50 shadow-xl">
-      <form onSubmit={handleSubmit} className="mb-4">
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Enter chemical name or formula..."
-              className="w-full bg-slate-800/80 text-white px-6 py-3 rounded-full 
-                border border-slate-700/50 focus:outline-none focus:ring-2 focus:ring-cyan-400/50
-                shadow-inner placeholder:text-slate-500"
-            />
-            {isLoading && (
-              <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                <div className="w-5 h-5 border-2 border-cyan-400/50 border-t-transparent rounded-full animate-spin" />
-              </div>
-            )}
-          </div>
-          <Button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="bg-gradient-to-r from-cyan-500 to-blue-500 text-white px-8 py-3 rounded-full 
-              hover:shadow-lg hover:shadow-cyan-500/20 transition-all duration-300"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Add
-          </Button>
-        </div>
-      </form>
-
-      <div className="suggestions">
-        <h3 className="text-xs font-semibold text-slate-400 mb-2">QUICK ADD:</h3>
-        <div className="flex flex-wrap gap-2">
-          {suggestions.map((suggestion) => (
-            <button
-              key={suggestion}
-              onClick={() => handleSuggestionClick(suggestion)}
-              disabled={isLoading}
-              className="text-xs bg-slate-800/50 hover:bg-slate-700/50 text-slate-300 
-                px-3 py-1.5 rounded-full border border-slate-700/30 transition-colors"
-            >
-              {suggestion}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Lab Notebook Component
-const LabNotebook = ({ reactions }: { reactions: Reaction[] }) => {
-  if (reactions.length === 0) {
-    return (
-      <div className="flex flex-col items-center justify-center h-64 text-slate-500">
-        <BookOpen className="w-12 h-12 mb-4 opacity-30" />
-        <p>Your lab notebook is empty</p>
-        <p className="text-sm">Perform reactions to record them here</p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-      {reactions.map((reaction, index) => (
-        <div key={index} className="bg-slate-800/50 rounded-lg p-4 border border-slate-700/50">
-          <div className="flex justify-between items-start mb-3">
-            <h3 className="font-medium text-white">Reaction #{reactions.length - index}</h3>
-            <span className="text-xs text-slate-500">{new Date(reaction.timestamp).toLocaleTimeString()}</span>
-          </div>
-
-          <div className="flex items-center gap-2 mb-4">
-            {reaction.chemicals.map((chem, i) => (
-              <div key={i} className="flex items-center">
-                <div
-                  className="w-6 h-6 rounded-full border border-slate-700/50 flex items-center justify-center"
-                  style={{ backgroundColor: chem.color }}
-                >
-                  <span className="text-[8px] font-bold text-white mix-blend-difference">{i + 1}</span>
-                </div>
-                {i < reaction.chemicals.length - 1 && <span className="mx-1 text-slate-500">+</span>}
-              </div>
-            ))}
-            <span className="mx-2 text-slate-500">=</span>
-            <div
-              className="w-8 h-8 rounded-full border-2 border-yellow-500/30"
-              style={{ backgroundColor: reaction.result.color }}
-            />
-          </div>
-
-          <div className="text-sm text-slate-300">
-            <div className="flex items-center gap-1">
-              <span className="text-slate-500">Result:</span>
-              <span className="font-medium">{reaction.result.name}</span>
-            </div>
-            {reaction.result.formula && (
-              <div className="flex items-center gap-1 mt-1">
-                <span className="text-slate-500">Formula:</span>
-                <span className="font-mono text-cyan-300/80">{reaction.result.formula}</span>
-              </div>
-            )}
-          </div>
-        </div>
-      ))}
-    </div>
-  )
-}
-
-// Periodic Table Element
-const PeriodicElement = ({
-  symbol,
-  name,
-  number,
-  category,
-}: {
-  symbol: string
-  name: string
-  number: number
-  category: string
-}) => {
-  // Color based on element category
-  const getCategoryColor = () => {
-    const colors: Record<string, string> = {
-      "alkali-metal": "from-red-500/20 to-red-600/20 border-red-500/30 hover:border-red-500/50",
-      "alkaline-earth": "from-orange-500/20 to-orange-600/20 border-orange-500/30 hover:border-orange-500/50",
-      "transition-metal": "from-yellow-500/20 to-yellow-600/20 border-yellow-500/30 hover:border-yellow-500/50",
-      "post-transition": "from-green-500/20 to-green-600/20 border-green-500/30 hover:border-green-500/50",
-      metalloid: "from-teal-500/20 to-teal-600/20 border-teal-500/30 hover:border-teal-500/50",
-      nonmetal: "from-cyan-500/20 to-cyan-600/20 border-cyan-500/30 hover:border-cyan-500/50",
-      halogen: "from-blue-500/20 to-blue-600/20 border-blue-500/30 hover:border-blue-500/50",
-      "noble-gas": "from-purple-500/20 to-purple-600/20 border-purple-500/30 hover:border-purple-500/50",
-      lanthanide: "from-pink-500/20 to-pink-600/20 border-pink-500/30 hover:border-pink-500/50",
-      actinide: "from-rose-500/20 to-rose-600/20 border-rose-500/30 hover:border-rose-500/50",
-    }
-
-    return colors[category] || "from-slate-500/20 to-slate-600/20 border-slate-500/30 hover:border-slate-500/50"
-  }
-
-  return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <motion.div
-            className={`w-12 h-12 flex flex-col items-center justify-center rounded-md 
-              bg-gradient-to-br ${getCategoryColor()} backdrop-blur-sm
-              border transition-colors cursor-pointer`}
-            whileHover={{ scale: 1.1, y: -5 }}
-          >
-            <span className="text-xs text-slate-500">{number}</span>
-            <span className="text-lg font-bold text-white">{symbol}</span>
-          </motion.div>
-        </TooltipTrigger>
-        <TooltipContent side="top">
-          <div className="text-center">
-            <p className="font-medium">{name}</p>
-            <p className="text-xs text-slate-400">{category.replace("-", " ")}</p>
-          </div>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
-  )
-}
-
-// Main Component
 export default function ChemicalLab() {
   const [selectedChemicals, setSelectedChemicals] = useState<Chemical[]>([])
   const [result, setResult] = useState<Chemical | null>(null)
@@ -617,10 +178,7 @@ export default function ChemicalLab() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-slate-800/50 border-slate-700/50 text-slate-300">
-                    <Download className="w-4 h-4 mr-2" />
-                    Export
-                  </Button>
+                  <ExportData reactions={reactions} />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Export reaction data</p>
@@ -631,9 +189,7 @@ export default function ChemicalLab() {
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-slate-800/50 border-slate-700/50 text-slate-300">
-                    <Info className="w-4 h-4" />
-                  </Button>
+                  <LabHelp />
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>Lab information and help</p>
@@ -658,7 +214,7 @@ export default function ChemicalLab() {
             >
               {/* 3D Lab Table Effect */}
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(16,185,129,0.05)_0,transparent_70%)]" />
-              <div className="absolute inset-0 bg-[url('/textures/lab-table.png')] opacity-10 bg-cover mix-blend-overlay" />
+              <div className="absolute inset-0 bg-[url('/textures/lab-table.jpeg')] opacity-10 bg-cover mix-blend-overlay" />
 
               {/* Grid Lines */}
               <div
@@ -725,13 +281,14 @@ export default function ChemicalLab() {
                     <motion.div
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="relative"
+                      className="relative flex flex-col items-center"
                     >
                       <TestTube chemical={result} isResult />
+
+                      {/* Reaction result label below the TestTube */}
                       <motion.div
-                        className="absolute -top-12 left-1/2 -translate-x-1/2 
-                          bg-gradient-to-r from-yellow-400 to-amber-500 text-white 
-                          px-4 py-2 rounded-full text-sm font-bold shadow-lg"
+                        className="mt-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-white 
+                px-4 py-2 rounded-full text-sm font-bold shadow-lg"
                         initial={{ y: -10 }}
                         animate={{ y: [0, -5, 0] }}
                         transition={{
@@ -744,6 +301,7 @@ export default function ChemicalLab() {
                       </motion.div>
                     </motion.div>
                   )}
+
                 </div>
               </div>
 
