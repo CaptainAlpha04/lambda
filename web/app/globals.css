@@ -52,8 +52,3 @@ ul {
 li {
   @apply text-base;
 }
-
-.career-background {
-  background-image:  repeating-radial-gradient(circle at 0 0, transparent 0, #47d3ff 61px), repeating-linear-gradient(#474bff, #ff003d);
-  background-color: #47d3ff;
-}

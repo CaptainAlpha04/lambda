@@ -3,11 +3,14 @@
 import { useState, useEffect } from "react"
 import CareerLanding from "../components/career/LandingPage"
 import CareerResults from "../components/career/ResultPage"
+import PersonalizedForm from "../components/career/PersonalizedForm"
 import LoadingSpinner from "../components/LoadingSpinner"
+
 
 export default function CareerPage() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState(null)
+  const [onPersonalize, setOnPersonalize] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
   const handleSearch = async (query: string) => {
@@ -47,9 +50,17 @@ export default function CareerPage() {
     setSearchQuery("")
   }
 
+  const handlePersonalized = () => {
+    setOnPersonalize(true)
+  }
+
   // Render the appropriate component based on state
   if (loading) {
     return <LoadingSpinner query={searchQuery} />
+  }
+
+  if (onPersonalize) {
+    return <PersonalizedForm />
   }
 
   if (results) {
@@ -57,5 +68,5 @@ export default function CareerPage() {
   }
 
   // Default view when no search has been performed
-  return <CareerLanding onSearch={handleSearch} />
+  return <CareerLanding onPersonalize={handlePersonalized} onSearch={handleSearch} />
 }

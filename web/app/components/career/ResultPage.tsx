@@ -192,7 +192,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
         {/* Header */}
         <div className="mb-8">
           <Link
-            href="/personalized-assessment"
+            href="/career"
             className="inline-flex items-center text-slate-600 hover:text-purple-600 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -218,7 +218,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                   <div className="text-sm text-slate-500">Job Growth</div>
                   <div className="text-xl font-bold">
                     {career.job_outlook.growth_rate}%{" "}
-                    <span className="text-sm font-normal text-slate-500">by {career.job_outlook.years}</span>
+                    <span className="text-xs font-normal text-slate-500">by {career.job_outlook.years}</span>
                   </div>
                 </div>
               </div>
@@ -313,7 +313,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                       <BriefcaseBusiness className="h-5 w-5 mr-2 text-slate-700" />
                       <CardTitle>Career Description</CardTitle>
                     </div>
-                    <CardDescription>What software engineers do and where they work</CardDescription>
+                    <CardDescription>What {career.title} do and where they work</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <p className="mb-4">{career.job_description}</p>

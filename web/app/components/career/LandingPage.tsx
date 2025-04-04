@@ -6,9 +6,10 @@ import { ArrowRight, Compass, MapPin, Search } from "lucide-react"
 
 interface CareerLandingProps {
     onSearch: (query: string) => void
+    onPersonalize: () => void
 }
 
-export default function LandingPage({ onSearch }: CareerLandingProps) {
+export default function LandingPage({ onSearch, onPersonalize }: CareerLandingProps) {
     const [inputValue, setInputValue] = useState("")
     const [placeholderCareer, setPlaceholderCareer] = useState("")
 
@@ -35,6 +36,11 @@ export default function LandingPage({ onSearch }: CareerLandingProps) {
             if (inputValue.trim()) {
             onSearch(inputValue.trim())
         }
+
+        const handlePersonalized = () => {
+            onPersonalize()
+        }
+
     }   
 
     return (
@@ -55,7 +61,7 @@ export default function LandingPage({ onSearch }: CareerLandingProps) {
             </div>
 
             {/* Direct Career Search */}
-          <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20 max-w-4xl mx-auto">
+        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-8 shadow-xl border border-white/20 max-w-4xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-white">Know your profession?</h2>
             <p className="text-white/80 mb-6">
               Enter your desired profession to get an AI-generated roadmap and resource guide instantly.
@@ -245,7 +251,9 @@ export default function LandingPage({ onSearch }: CareerLandingProps) {
                         <span className="text-sm">100% Free</span>
                         </div>
                     </div>
-                    <Button className="bg-white hover:bg-white/90 text-purple-700 text-lg py-7 px-8 rounded-full transition-all duration-300 hover:shadow-lg group-hover:scale-105 font-semibold">
+                    <Button 
+                    onClick={onPersonalize}
+                    className="bg-white hover:bg-white/90 text-purple-700 text-lg py-7 px-8 rounded-full transition-all duration-300 hover:shadow-lg group-hover:scale-105 font-semibold">
                         <span>Start Your Career Discovery</span>
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
@@ -447,7 +455,9 @@ export default function LandingPage({ onSearch }: CareerLandingProps) {
 
                 {/* CTA */}
                 <div className="mt-12 text-center">
-                <Button className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-lg py-6 px-10 rounded-full transition-all duration-300 hover:shadow-lg ">
+                <Button
+                onClick={onPersonalize}
+                className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-lg py-6 px-10 rounded-full transition-all duration-300 hover:shadow-lg ">
                     <span>Start Your Free Career Assessment</span>
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
