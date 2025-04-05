@@ -54,17 +54,49 @@ export default function CareerPage() {
     setOnPersonalize(true)
   }
 
+  const submitPersonalized = async (formData: any) => {
+    setLoading(true)
+    setOnPersonalize(false) // Hide the personalized form after submission
+    try {
+      // Simulate API call - replace with actual API call
+      const response = await fetch("/api/roadmap", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ data : formData }),
+      })
+      
+      if (response.ok) {
+        const data = await response.json()
+        console.log(data.career)
+        // Add a slight delay to show loading state
+        setTimeout(() => {
+          setResults(data)
+          setLoading(false)
+          setOnPersonalize(false) // Reset personalization state after submission
+        }, 10)
+      } else {
+        console.error("Error:", response.statusText)
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error("Error fetching results:", error)
+      setLoading(false)
+    }
+  }
+
   // Render the appropriate component based on state
   if (loading) {
     return <LoadingSpinner query={searchQuery} />
   }
 
   if (onPersonalize) {
-    return <PersonalizedForm />
+    return <PersonalizedForm onSubmit={submitPersonalized}/>
   }
 
   if (results) {
-    return <CareerResults data={results} onReset={resetSearch} searchQuery={searchQuery} />
+    return <CareerResults data={results} onReset={resetSearch} onSearch={handleSearch} />
   }
 
   // Default view when no search has been performed

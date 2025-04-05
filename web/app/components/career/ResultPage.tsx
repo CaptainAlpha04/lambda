@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, use } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -51,6 +51,20 @@ type CareerData = {
       growth_rate: number
       years: number
       source: string
+    }
+    career_reasons: {
+      interest_based: {
+        title: string
+        description: string
+      }
+      skills_based: {
+        title: string
+        description: string
+      }
+      job_market_based: {
+        title: string
+        description: string
+      }
     }
     similar_careers: Array<{
       title: string
@@ -152,13 +166,12 @@ type CareerData = {
 interface CareerResultsProps {
   data: CareerData // Type this properly based on your actual API response
   onReset: () => void
-  searchQuery: string
+  onSearch: (query: string) => void
 }
 
-export default function CareerResults({ data, onReset, searchQuery }: CareerResultsProps) {
-  
+export default function CareerResults({ data, onReset, onSearch }: CareerResultsProps) {
+  const [activeTab, setActiveTab] = useState("overview")
   const career = data.career
-
 
   // Helper function to get color based on difficulty level
   const getDifficultyColor = (difficulty: string) => {
@@ -172,6 +185,12 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
       default:
         return "slate"
     }
+  }
+
+  // Helper function to change tabs
+  const navigateToTab = (tab: string) => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    setActiveTab(tab)
   }
 
   // Helper function to get color based on importance
@@ -194,6 +213,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
           <Link
             href="/career"
             className="inline-flex items-center text-slate-600 hover:text-purple-600 mb-4"
+            onClick={onReset}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Assessment
@@ -227,7 +247,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
         </div>
 
         {/* Navigation Tabs */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 h-auto p-1">
             <TabsTrigger value="overview" className="py-2">
               Overview
@@ -250,7 +270,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
           </TabsList>
 
           {/* Overview Tab */}
-          <TabsContent value="overview">
+          <TabsContent value="overview" id="overview">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Left Column */}
               <div className="lg:col-span-2 space-y-8">
@@ -269,10 +289,9 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                           <ThumbsUp className="h-4 w-4 text-purple-600" />
                         </div>
                         <div>
-                          <h3 className="font-medium">Matches Your Technical Interests</h3>
+                          <h3 className="font-medium">{career.career_reasons.interest_based.title}</h3>
                           <p className="text-slate-600">
-                            Your interest in technology and problem-solving aligns perfectly with the core skills needed
-                            for software engineering.
+                            {career.career_reasons.interest_based.description}
                           </p>
                         </div>
                       </div>
@@ -282,10 +301,9 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                           <Star className="h-4 w-4 text-indigo-600" />
                         </div>
                         <div>
-                          <h3 className="font-medium">Strong Job Market & Growth</h3>
+                          <h3 className="font-medium">{career.career_reasons.skills_based.title}</h3>
                           <p className="text-slate-600">
-                            With a {career.job_outlook.growth_rate}% projected growth rate, software engineering offers
-                            excellent job security and career advancement opportunities.
+                          {career.career_reasons.skills_based.description}
                           </p>
                         </div>
                       </div>
@@ -295,10 +313,9 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                           <LineChart className="h-4 w-4 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="font-medium">Competitive Compensation</h3>
+                          <h3 className="font-medium">{career.career_reasons.job_market_based.title}</h3>
                           <p className="text-slate-600">
-                            Software engineers enjoy above-average salaries with excellent benefits and perks,
-                            especially at top tech companies.
+                            {career.career_reasons.job_market_based.description}
                           </p>
                         </div>
                       </div>
@@ -357,7 +374,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                   <CardHeader>
                     <div className="flex items-center">
                       <Building2 className="h-5 w-5 mr-2 text-slate-700" />
-                      <CardTitle>Top Companies Hiring Software Engineers</CardTitle>
+                      <CardTitle>Top Companies Hiring {career.title}</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -428,10 +445,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => {
-                        const element = document.querySelector('[data-value="path"]') as HTMLElement;
-                        element?.click();
-                      }}
+                      onClick={() => {navigateToTab("path")}}
                     >
                       View Detailed Career Path
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -464,10 +478,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => {
-                        const element = document.querySelector('[data-value="skills"]') as HTMLElement;
-                        element?.click();
-                      }}
+                      onClick={() => {navigateToTab("skills")}}
                     >
                       View All Skills
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -536,10 +547,7 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                     <Button
                       variant="outline"
                       className="w-full"
-                      onClick={() => {
-                        const element = document.querySelector('[data-value="resources"]') as HTMLElement;
-                        element?.click();
-                      }}
+                      onClick={() => {navigateToTab("resources")}}
                     >
                       Explore All Resources
                       <ChevronRight className="ml-2 h-4 w-4" />
@@ -995,17 +1003,17 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                             ))}
                           </div>
                           <div className="bg-slate-50 p-3 rounded-lg mb-4">
-                            <h4 className="text-sm font-medium mb-1">Project Details</h4>
+                            <h4 className={`text-sm font-medium mb-1 text-${getDifficultyColor(project.difficulty_level)}-600`}>Project Details</h4>
                             <p className="text-xs text-slate-600">{project.project_details}</p>
                           </div>
-                          <Button
+                          {/* <Button
                             variant="outline"
                             size="sm"
                             className={`text-${getDifficultyColor(project.difficulty_level)}-600 hover:text-${getDifficultyColor(project.difficulty_level)}-800 hover:bg-${getDifficultyColor(project.difficulty_level)}-50 w-full`}
                           >
                             View Project Details
                             <ChevronRight className="h-4 w-4 ml-1" />
-                          </Button>
+                          </Button> */}
                         </div>
                       </div>
                     ))}
@@ -1096,7 +1104,9 @@ export default function CareerResults({ data, onReset, searchQuery }: CareerResu
                     </div>
                   </CardContent>
                   <CardFooter className="border-t pt-4">
-                    <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                    onClick={() => {onSearch(similarCareer.title)}}
+                    >
                       Explore This Career
                       <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>

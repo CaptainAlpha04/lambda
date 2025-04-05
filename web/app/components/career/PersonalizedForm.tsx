@@ -52,7 +52,11 @@ type FormData = {
   }
 }
 
-export default function PersonalizedForm() {
+interface PersonalizedFormProps {
+  onSubmit: (data: FormData) => void
+}
+
+export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
   const router = useRouter()
   const [activeTab, setActiveTab] = useState("basics")
   const [progress, setProgress] = useState(20)
@@ -360,31 +364,8 @@ export default function PersonalizedForm() {
       return
     }
 
-    setLoading(true)
-
-    try {
-      // Submit form data to API
-      const response = await fetch("http://localhost:3000/api/assessment", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      })
-
-      if (!response.ok) {
-        throw new Error("Failed to submit assessment")
-      }
-
-      // Navigate to results page after successful submission
-      setTimeout(() => {
-        router.push("/personalized-assessment/results")
-      }, 1500)
-    } catch (error) {
-      console.error("Error submitting assessment:", error)
-      setErrors({ submit: "Failed to submit assessment. Please try again." })
-      setLoading(false)
-    }
+    // Pass the form data to the parent component
+    onSubmit(formData)
   }
 
   const handleInputChange = (section: keyof FormData, field: string, value: any) => {
@@ -513,7 +494,7 @@ export default function PersonalizedForm() {
                         <SelectTrigger id="grade" className={errors.grade ? "border-red-500" : ""}>
                           <SelectValue placeholder="Select your education level" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           <SelectItem value="middle-school">Middle School</SelectItem>
                           <SelectItem value="high-school-9">High School - Grade 9</SelectItem>
                           <SelectItem value="high-school-10">High School - Grade 10</SelectItem>
@@ -555,7 +536,7 @@ export default function PersonalizedForm() {
                         <SelectTrigger id="major">
                           <SelectValue placeholder="Select or type your major (optional)" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white">
                           <SelectItem value="undecided">Undecided</SelectItem>
                           <SelectItem value="computer-science">Computer Science</SelectItem>
                           <SelectItem value="business">Business</SelectItem>
@@ -592,7 +573,7 @@ export default function PersonalizedForm() {
                       </div>
                       <div className="flex flex-wrap gap-2 mb-2">
                         {subjects.map((subject) => (
-                          <Badge key={subject} variant="secondary" className="py-1.5 pl-3 pr-2 flex items-center gap-1">
+                          <Badge key={subject} variant="outline" className="py-1.5 pl-3 pr-2 flex items-center gap-1 bg-slate-200">
                             {subject}
                             <button
                               type="button"
@@ -644,7 +625,7 @@ export default function PersonalizedForm() {
                         <SelectTrigger id="gpa" className="!bg-white">
                           <SelectValue placeholder="Select your GPA range (optional)" />
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-white" >
                           <SelectItem value="4.0+">4.0 or higher</SelectItem>
                           <SelectItem value="3.5-3.99">3.5 - 3.99</SelectItem>
                           <SelectItem value="3.0-3.49">3.0 - 3.49</SelectItem>
@@ -875,12 +856,14 @@ export default function PersonalizedForm() {
                           >
                             <Checkbox
                               id="independent"
+                              className="text-white"
                               checked={selectedWorkStyles.includes("independent")}
                               onCheckedChange={() => handleWorkStyleChange("independent")}
                             />
                             <div className="grid gap-1.5 leading-none">
                               <Label
                                 htmlFor="independent"
+                                
                                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                               >
                                 Independent Worker
@@ -895,6 +878,7 @@ export default function PersonalizedForm() {
                           >
                             <Checkbox
                               id="collaborative"
+                              className="text-white"
                               checked={selectedWorkStyles.includes("collaborative")}
                               onCheckedChange={() => handleWorkStyleChange("collaborative")}
                             />
@@ -915,6 +899,7 @@ export default function PersonalizedForm() {
                           >
                             <Checkbox
                               id="structured"
+                              className="text-white"
                               checked={selectedWorkStyles.includes("structured")}
                               onCheckedChange={() => handleWorkStyleChange("structured")}
                             />
@@ -935,6 +920,7 @@ export default function PersonalizedForm() {
                           >
                             <Checkbox
                               id="flexible"
+                              className="text-white"
                               checked={selectedWorkStyles.includes("flexible")}
                               onCheckedChange={() => handleWorkStyleChange("flexible")}
                             />
@@ -1055,7 +1041,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.personality.approachToChallenges === "analytical" ? "bg-blue-50 border-blue-300" : ""}`}
                           >
-                            <RadioGroupItem value="analytical" id="analytical" />
+                            <RadioGroupItem value="analytical" id="analytical" className="text-white"/>
                             <div>
                               <Label htmlFor="analytical" className="font-medium">
                                 Analytical Approach
@@ -1068,7 +1054,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.personality.approachToChallenges === "creative" ? "bg-purple-50 border-purple-300" : ""}`}
                           >
-                            <RadioGroupItem value="creative" id="creative" />
+                            <RadioGroupItem value="creative" id="creative" className="text-white" />
                             <div>
                               <Label htmlFor="creative" className="font-medium">
                                 Creative Approach
@@ -1092,7 +1078,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.personality.environment === "fast-paced" ? "bg-blue-50 border-blue-300" : ""}`}
                           >
-                            <RadioGroupItem value="fast-paced" id="fast-paced" />
+                            <RadioGroupItem value="fast-paced" id="fast-paced" className="text-white" />
                             <div>
                               <Label htmlFor="fast-paced" className="font-medium">
                                 Fast-Paced & Dynamic
@@ -1105,7 +1091,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.personality.environment === "calm" ? "bg-green-50 border-green-300" : ""}`}
                           >
-                            <RadioGroupItem value="calm" id="calm" />
+                            <RadioGroupItem value="calm" id="calm" className="text-white" />
                             <div>
                               <Label htmlFor="calm" className="font-medium">
                                 Calm & Methodical
@@ -1171,6 +1157,7 @@ export default function PersonalizedForm() {
     >
       <Checkbox
         id={item.id}
+        className="text-white"
         checked={selectedCareerImportance.includes(item.id)}
         disabled={selectedCareerImportance.length >= 3 && !selectedCareerImportance.includes(item.id)}
         onCheckedChange={() => {
@@ -1213,7 +1200,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.workLocation === "remote" ? "bg-blue-50 border-blue-300" : ""}`}
                           >
-                            <RadioGroupItem value="remote" id="remote" className="sr-only" />
+                            <RadioGroupItem value="remote" id="remote" className="sr-only text-white"/>
                             <Label htmlFor="remote" className="cursor-pointer text-center">
                               <div className="mb-2 bg-blue-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
                                 <svg
@@ -1242,7 +1229,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.workLocation === "office" ? "bg-purple-50 border-purple-300" : ""}`}
                           >
-                            <RadioGroupItem value="office" id="office" className="sr-only" />
+                            <RadioGroupItem value="office" id="office" className="sr-only text-white" />
                             <Label htmlFor="office" className="cursor-pointer text-center">
                               <div className="mb-2 bg-purple-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
                                 <svg
@@ -1268,7 +1255,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex flex-col items-center space-y-2 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.workLocation === "hybrid" ? "bg-green-50 border-green-300" : ""}`}
                           >
-                            <RadioGroupItem value="hybrid" id="hybrid" className="sr-only" />
+                            <RadioGroupItem value="hybrid" id="hybrid" className="sr-only text-white" />
                             <Label htmlFor="hybrid" className="cursor-pointer text-center">
                               <div className="mb-2 bg-green-100 w-12 h-12 rounded-full flex items-center justify-center mx-auto">
                                 <svg
@@ -1304,7 +1291,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.travelPreference === "no-travel" ? "bg-slate-100 border-slate-300" : ""}`}
                           >
-                            <RadioGroupItem value="no-travel" id="no-travel" />
+                            <RadioGroupItem value="no-travel" id="no-travel" className="text-white" />
                             <div>
                               <Label htmlFor="no-travel" className="font-medium">
                                 Minimal Travel
@@ -1315,7 +1302,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.travelPreference === "occasional" ? "bg-blue-50 border-blue-300" : ""}`}
                           >
-                            <RadioGroupItem value="occasional" id="occasional" />
+                            <RadioGroupItem value="occasional" id="occasional" className="text-white" />
                             <div>
                               <Label htmlFor="occasional" className="font-medium">
                                 Occasional Travel
@@ -1326,7 +1313,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.preferences.travelPreference === "frequent" ? "bg-green-50 border-green-300" : ""}`}
                           >
-                            <RadioGroupItem value="frequent" id="frequent" />
+                            <RadioGroupItem value="frequent" id="frequent" className="text-white" />
                             <div>
                               <Label htmlFor="frequent" className="font-medium">
                                 Frequent Travel
@@ -1368,7 +1355,7 @@ export default function PersonalizedForm() {
 
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label htmlFor="career-fields">Career fields you're curious about (optional)</Label>
+                        <Label htmlFor="career-fields">Career field you're most curious about (optional)</Label>
                         <Select
                           value={formData.goals.careerFields.join(",")}
                           onValueChange={(value) =>
@@ -1378,7 +1365,7 @@ export default function PersonalizedForm() {
                           <SelectTrigger id="career-fields">
                             <SelectValue placeholder="Select fields you're interested in exploring" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white" >
                             <SelectItem value="technology">Technology & Computing</SelectItem>
                             <SelectItem value="healthcare">Healthcare & Medicine</SelectItem>
                             <SelectItem value="business">Business & Finance</SelectItem>
@@ -1405,7 +1392,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.goals.learningStyle === "hands-on" ? "bg-green-50 border-green-300" : ""}`}
                           >
-                            <RadioGroupItem value="hands-on" id="hands-on" />
+                            <RadioGroupItem value="hands-on" id="hands-on" className="text-white" />
                             <div>
                               <Label htmlFor="hands-on" className="font-medium">
                                 Hands-on Practice
@@ -1416,7 +1403,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.goals.learningStyle === "theoretical" ? "bg-blue-50 border-blue-300" : ""}`}
                           >
-                            <RadioGroupItem value="theoretical" id="theoretical" />
+                            <RadioGroupItem value="theoretical" id="theoretical" className="text-white" />
                             <div>
                               <Label htmlFor="theoretical" className="font-medium">
                                 Theoretical Study
@@ -1427,7 +1414,7 @@ export default function PersonalizedForm() {
                           <div
                             className={`flex items-start space-x-3 border rounded-lg p-4 hover:bg-slate-50 transition-colors ${formData.goals.learningStyle === "mixed" ? "bg-purple-50 border-purple-300" : ""}`}
                           >
-                            <RadioGroupItem value="mixed" id="mixed" />
+                            <RadioGroupItem value="mixed" id="mixed" className="text-white"/>
                             <div>
                               <Label htmlFor="mixed" className="font-medium">
                                 Mixed Approach
@@ -1463,7 +1450,7 @@ export default function PersonalizedForm() {
                           <SelectTrigger id="challenges">
                             <SelectValue placeholder="Select your biggest challenge" />
                           </SelectTrigger>
-                          <SelectContent>
+                          <SelectContent className="bg-white">
                             <SelectItem value="too-many-options">Too many options, feeling overwhelmed</SelectItem>
                             <SelectItem value="no-passion">Haven't found something I'm passionate about</SelectItem>
                             <SelectItem value="conflicting-interests">
