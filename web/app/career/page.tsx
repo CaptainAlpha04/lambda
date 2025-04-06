@@ -5,11 +5,12 @@ import CareerLanding from "../components/career/LandingPage"
 import CareerResults from "../components/career/ResultPage"
 import PersonalizedForm from "../components/career/PersonalizedForm"
 import LoadingSpinner from "../components/LoadingSpinner"
-
+import {CareerDataError} from '../components/Error'
 
 export default function CareerPage() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState<Boolean>(false)
   const [results, setResults] = useState(null)
+  const [error, setError] = useState(false)
   const [onPersonalize, setOnPersonalize] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
 
@@ -38,10 +39,12 @@ export default function CareerPage() {
       } else {
         console.error("Error:", response.statusText)
         setLoading(false)
+        setError(true)
       }
     } catch (error) {
       console.error("Error fetching results:", error)
       setLoading(false)
+      setError(true)
     }
   }
 
@@ -79,10 +82,12 @@ export default function CareerPage() {
       } else {
         console.error("Error:", response.statusText)
         setLoading(false)
+        setError(true)
       }
     } catch (error) {
       console.error("Error fetching results:", error)
       setLoading(false)
+      setError(true)
     }
   }
 
@@ -97,6 +102,10 @@ export default function CareerPage() {
 
   if (results) {
     return <CareerResults data={results} onReset={resetSearch} onSearch={handleSearch} />
+  } 
+
+  if (error) {
+    return <CareerDataError />
   }
 
   // Default view when no search has been performed

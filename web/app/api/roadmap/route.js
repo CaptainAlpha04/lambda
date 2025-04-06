@@ -131,6 +131,7 @@ export async function POST(request) {
         try {
             // Use our utility function to clean and parse the JSON
             const parsedData = cleanAndParseJSON(rawText);
+            
             return NextResponse.json(parsedData, { status: 200 });
         } catch (parseError) {
             console.error('JSON parsing error:', parseError);

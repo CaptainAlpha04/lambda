@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Label }  from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Compass, ArrowRight, Plus, X, HelpCircle, Info, AlertCircle } from "lucide-react"
+import { Compass, ArrowRight, Plus, X, HelpCircle, Info, AlertCircle, Link, ArrowLeft } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -102,30 +102,9 @@ export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
     },
   })
 
-  // Update form data when values change
-  // useEffect(() => {
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     education: {
-  //       ...prev.education,
-  //       subjects,
-  //     },
-  //     interests: {
-  //       ...prev.interests,
-  //       hobbies: interests,
-  //       strengths,
-  //       experience: experienceYears,
-  //     },
-  //     personality: {
-  //       ...prev.personality,
-  //       workStyles: selectedWorkStyles,
-  //     },
-  //     preferences: {
-  //       ...prev.preferences,
-  //       careerImportance: selectedCareerImportance,
-  //     },
-  //   }))
-  // }, [subjects, interests, strengths, experienceYears, selectedWorkStyles, selectedCareerImportance])
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  },[])
 
   const addSubject = () => {
     if (newSubject && !subjects.includes(newSubject)) {
@@ -210,6 +189,8 @@ export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
 
   const handleTabChange = (value: string) => {
     // Validate current tab before moving to the next one
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
     if (activeTab === "basics" && value !== "basics") {
       if (!formData.education.grade) {
         setErrors({ grade: "Please select your education level" })
@@ -390,6 +371,11 @@ export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 py-12 px-4 md:px-8">
       <div className="max-w-4xl mx-auto">
+        {/* Back Button */}
+        <Button variant="link" className="mb-6" onClick={() => window.location.reload()}>
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back
+        </Button>
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center justify-center mb-4">
@@ -423,7 +409,7 @@ export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
           <CardContent className="p-0">
             <form onSubmit={handleSubmit}>
               <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-                <TabsList className="grid grid-cols-5 w-full rounded-none bg-slate-100">
+                <TabsList className="flex flex-wrap md:grid md:grid-cols-5 w-full rounded-none bg-slate-100">
                   <TabsTrigger
                     value="basics"
                     className="data-[state=active]:bg-white rounded-none border-b-2 border-transparent data-[state=active]:border-purple-600"
@@ -1537,7 +1523,7 @@ export default function PersonalizedForm({ onSubmit }: PersonalizedFormProps) {
                           </div>
                         ) : (
                           <div className="flex items-center">
-                            Get Personalized Recommendations
+                            Analyze
                             <ArrowRight className="ml-2 h-5 w-4" />
                           </div>
                         )}

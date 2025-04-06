@@ -73,7 +73,7 @@ export default function LandingPage({ onSearch, onPersonalize }: CareerLandingPr
                 <Input
                   type="text"
                   placeholder={`I want to be a ${placeholderCareer}...`}
-                  className="pl-10 py-6 text-lg rounded-full bg-white/90 border-transparent focus:border-white focus:ring-white text-purple-900 placeholder:text-purple-900/50"
+                  className="pl-10 py-6 rounded-full bg-white/90 border-transparent focus:border-white focus:ring-white text-purple-900 placeholder:text-purple-900/50 text-sm md:text-lg"
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                 />
@@ -173,7 +173,7 @@ export default function LandingPage({ onSearch, onPersonalize }: CareerLandingPr
                 </div>
 
                 <div className="relative z-10 p-8 md:p-10">
-                <div className="grid md:grid-cols-5 gap-8 items-center">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-8 items-center">
                     {/* Content */}
                     <div className="md:col-span-3 text-white">
                     <div className="inline-flex items-center justify-center p-3 bg-white/10 backdrop-blur-sm rounded-2xl mb-6">
@@ -254,7 +254,7 @@ export default function LandingPage({ onSearch, onPersonalize }: CareerLandingPr
                     <Button 
                     onClick={onPersonalize}
                     className="bg-white hover:bg-white/90 text-purple-700 text-lg py-7 px-8 rounded-full transition-all duration-300 hover:shadow-lg group-hover:scale-105 font-semibold">
-                        <span>Start Your Career Discovery</span>
+                        <span className="md:text-lg text-sm">Start Your Career Discovery</span>
                         <ArrowRight className="ml-2 h-5 w-5" />
                     </Button>
                     </div>
@@ -285,7 +285,7 @@ export default function LandingPage({ onSearch, onPersonalize }: CareerLandingPr
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-12">
                 <div className="bg-purple-50 rounded-xl p-4 text-center">
                     <div className="text-purple-600 font-bold text-3xl mb-1">5,000+</div>
                     <div className="text-slate-700 text-sm">Career Transitions</div>
@@ -458,7 +458,7 @@ export default function LandingPage({ onSearch, onPersonalize }: CareerLandingPr
                 <Button
                 onClick={onPersonalize}
                 className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-lg py-6 px-10 rounded-full transition-all duration-300 hover:shadow-lg ">
-                    <span>Start Your Free Career Assessment</span>
+                        <span>Learn More</span>
                     <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
                 <p className="text-slate-500 text-sm mt-4">No credit card required • Perfect for students at any stage</p>
