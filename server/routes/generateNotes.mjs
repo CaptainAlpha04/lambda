@@ -13,7 +13,8 @@ const generateNotes = (app) => {
         console.log("File type:", req.file.mimetype);
 
         // Pass the file buffer or path to your class
-        const generator = new generateNotesClass(req.file);
+        const generator = new generateNotesClass(req.file, req.body.grade, req.body.subject);
+
 
         res.json({ message: "File processed successfully", file: req.file.originalname });
     });

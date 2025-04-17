@@ -12,7 +12,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 class generateNotesClass {
-    constructor(file) {
+    constructor(file, grade, subject) {
+        this.grade = grade;
+        this.subject = subject;
         this.init(file);
         this.SystemInstructs = process.env.NOTES_GENERATOR_SYSTEM_INSTUCT;
         this.chat = null;
@@ -35,7 +37,7 @@ class generateNotesClass {
         try {
             // Create temp directory if it doesn't exist
             fs.mkdirSync(path.dirname(this.filePath), { recursive: true });
-            
+
             // Save file locally in temp folder
             fs.writeFileSync(this.filePath, this.notes);
             console.log(`File saved at: ${this.filePath}`);
@@ -49,7 +51,7 @@ class generateNotesClass {
             });
 
             console.log("File uploaded successfully:", uploadFile);
-            
+
             // Generate notes
             this.controller(uploadFile);
 
@@ -81,7 +83,7 @@ class generateNotesClass {
             const subtopics = subtopicsArray[0];
 
             for (let subtopic of subtopics) {
-                
+
                 // Generate Notes from each topic
                 const notes = await this.getNotes(uploadedFile, chapter, subtopic);
                 console.log(notes);
@@ -93,7 +95,39 @@ class generateNotesClass {
                 // Generate MCQs from each topic
                 const mcqs = await this.getMCQs(uploadedFile, chapter, subtopic);
                 console.log(mcqs);
-                return;
+
+                try {
+                    const flashcardsToSave = flashCards.flashcards.map(card => ({
+                        chapter,
+                        subtopic,
+                        grade: this.grade,
+                        subject: this.subject,
+                        ...card
+                    }));
+                    await FlashCards.insertMany(flashcardsToSave);
+                    console.log(`Saved ${flashcardsToSave.length} flashcards for ${subtopic}`);
+                } catch (err) {
+                    console.error("Error saving flashcards:", err);
+                }
+
+               // Save MCQs
+try {
+    const mcqsToSave = mcqs.mcqs.map(mcq => ({
+        chapter,
+        subtopic,
+        grade: this.grade,
+        subject: this.subject,
+        ...mcq,
+        options: mcq.options.map(opt => ({
+            option: opt.option,
+            isCorrect: opt.isCorrect
+        }))
+    }));
+    await MCQs.insertMany(mcqsToSave);
+    console.log(`Saved ${mcqsToSave.length} MCQs for ${subtopic}`);
+} catch (err) {
+    console.error("Error saving MCQs:", err);
+}
             }
         }
         return;
@@ -112,13 +146,13 @@ class generateNotesClass {
                 },
                 'List all the chapters from notes'
             ]);
-            
+
             // Parse response to JSON
             const chapterText = chapterResponse.response.text();
             const parsedJSON = cleanJSON(chapterText);
-            
+
             let chapterTitles = [];
-            
+
             // Extract chapter titles based on response format
             if (Array.isArray(parsedJSON.chapters)) {
                 chapterTitles = parsedJSON.chapters.map(item => item.chapter);
@@ -130,7 +164,7 @@ class generateNotesClass {
             } else {
                 throw new Error("Failed to extract chapters from document");
             }
-            
+
             console.log(`Extracted ${chapterTitles.length} chapters from document`);
             return [chapterTitles]; // Keep existing array structure for compatibility
         } catch (error) {
@@ -138,7 +172,7 @@ class generateNotesClass {
             return [];
         }
     }
-    
+
     // returns and array with list of all the sub chapters.
     async getSubChapter(uploadedFile, chapter) {
 
@@ -153,14 +187,14 @@ class generateNotesClass {
                 },
                 `List the sub-topics or headings (if any) from the chapter: ${chapter}, otherwise return empty array`
             ]);
-            
+
             // Parse response to JSON
             const subChapterText = subChapterResponse.response.text();
             const parsedJSON = cleanJSON(subChapterText);
             console.log(parsedJSON)
 
             let subChapterTitles = [];
-            
+
             // Extract sub-chapter titles based on response format
             if (Array.isArray(parsedJSON.subtopics)) {
                 subChapterTitles = parsedJSON.subtopics.map(item => item.subtopic);
@@ -172,7 +206,7 @@ class generateNotesClass {
             } else {
                 throw new Error("Failed to extract sub-chapters from document");
             }
-            
+
             console.log(`Extracted ${subChapterTitles.length} sub-chapters from document`);
             return [subChapterTitles]; // Keep existing array structure for compatibility
         } catch (error) {
@@ -269,22 +303,22 @@ class generateNotesClass {
 
             if (Array.isArray(parsedJSON.flashcards)) {
                 formattedFlashCards = parsedJSON.flashcards.map(fcard => ({
-                    question: fcard.question || fcard. problem || fcard.title,
+                    question: fcard.question || fcard.problem || fcard.title,
                     answer: fcard.answer || fcard.solution || fcard.text,
                     hint: fcard.hint || fcard.clue || fcard.hints
                 }));
-            
+
             } else if (typeof parsedJSON.flashcards === 'object' && parsedJSON.flashcards !== null) {
                 const transformedFlashCards = convert2Array(parsedJSON.flashcards);
                 formattedFlashCards = transformedFlashCards.map(fcard => ({
-                    question: fcard.question || fcard. problem || fcard.title,
+                    question: fcard.question || fcard.problem || fcard.title,
                     answer: fcard.answer || fcard.solution || fcard.text,
                     hint: fcard.hint || fcard.clue || fcard.hints
                 }));
-            
+
             } else if (Array.isArray(parsedJSON)) {
                 formattedFlashCards = parsedJSON.map(fcard => ({
-                    question: fcard.question || fcard. problem || fcard.title,
+                    question: fcard.question || fcard.problem || fcard.title,
                     answer: fcard.answer || fcard.solution || fcard.text,
                     hint: fcard.hint || fcard.clue || fcard.hints
                 }));
@@ -309,7 +343,7 @@ class generateNotesClass {
                 console.log(`First flash Card question: "${formattedFlashCards[0].question}"`);
                 console.log(`First flash Card answer preview: "${formattedFlashCards[0].answer}"`);
                 console.log(`First flash Card hint: "${formattedFlashCards[0].hint}"`);
-            }  
+            }
 
             return {
                 topic: subtopic || chapter,
@@ -324,87 +358,95 @@ class generateNotesClass {
         }
     }
 
-    async getMCQs(uploadedFile, chapter, subtopic) {
-    try {
-        // Request MCQs from the AI model
-        const mcqResponse = await this.chat.sendMessage([
-            {
-                fileData: {
-                    fileUri: uploadedFile.file.uri,
-                    mimeType: uploadedFile.file.mimeType
+    async getMCQs(uploadedFile, chapter, subtopic) { 
+        try {
+            // Request MCQs from the AI model
+            const mcqResponse = await this.chat.sendMessage([
+                {
+                    fileData: {
+                        fileUri: uploadedFile.file.uri,
+                        mimeType: uploadedFile.file.mimeType
+                    },
                 },
-            },
-            `Generate multiple-choice questions (MCQs) for the sub-topic: ${subtopic}, from the chapter: ${chapter}. 
-                Include 15-50 well-formed MCQs with 4 options each, varying in difficulty based on bloom taxonomy.
+                `Generate multiple-choice questions (MCQs) for the sub-topic: ${subtopic}, from the chapter: ${chapter}. 
+                Include 5-10 well-formed MCQs with 4 options each, varying in difficulty based on bloom taxonomy.
                 Return in JSON format with a "topic" field and an "mcqs" array containing objects with 
                 "question", "options" (as an array of strings), and "correct_option" fields. make the MCQs tricky, engaging that test the understanding and critical analysis of the topic.`
-        ]);
-        
-        // Parse and process the response
-        const parsedJSON = cleanJSON(mcqResponse.response.text());
-        let formattedMCQs = [];
-        
-        // Extract MCQs from different possible response structures
-        if (parsedJSON.mcqs && Array.isArray(parsedJSON.mcqs)) {
-            // Standard response format
-            formattedMCQs = parsedJSON.mcqs.map(mcq => ({
-                question: mcq.question,
-                options: Array.isArray(mcq.options) ? mcq.options : [],
-                correct_option: mcq.correct_option
-            }));
-        } else if (typeof parsedJSON.mcqs === 'object' && parsedJSON.mcqs !== null) {
-            // Object format - convert to array
-            const transformedMCQs = convert2Array(parsedJSON.mcqs);
-            if (transformedMCQs?.length) {
-                formattedMCQs = transformedMCQs.map(mcq => ({
+            ]);
+    
+            // Parse and process the response
+            const parsedJSON = cleanJSON(mcqResponse.response.text());
+            let formattedMCQs = [];
+    
+            // Extract MCQs from different possible response structures
+            if (parsedJSON.mcqs && Array.isArray(parsedJSON.mcqs)) {
+                formattedMCQs = parsedJSON.mcqs.map(mcq => ({
                     question: mcq.question,
-                    options: Array.isArray(mcq.options) ? mcq.options : [],
+                    options: mcq.options.map(option => ({
+                        option,  // option text
+                        isCorrect: option === mcq.correct_option  // mark as correct based on comparison
+                    })),
                     correct_option: mcq.correct_option
                 }));
+            } else if (typeof parsedJSON.mcqs === 'object' && parsedJSON.mcqs !== null) {
+                const transformedMCQs = convert2Array(parsedJSON.mcqs);
+                if (transformedMCQs?.length) {
+                    formattedMCQs = transformedMCQs.map(mcq => ({
+                        question: mcq.question,
+                        options: mcq.options.map(option => ({
+                            option,  // option text
+                            isCorrect: option === mcq.correct_option  // mark as correct based on comparison
+                        })),
+                        correct_option: mcq.correct_option
+                    }));
+                }
+            } else if (Array.isArray(parsedJSON)) {
+                formattedMCQs = parsedJSON.map(mcq => ({
+                    question: mcq.question,
+                    options: mcq.options.map(option => ({
+                        option,  // option text
+                        isCorrect: option === mcq.correct_option  // mark as correct based on comparison
+                    })),
+                    correct_option: mcq.correct_option
+                }));
+            } else if (parsedJSON.questions && Array.isArray(parsedJSON.questions)) {
+                formattedMCQs = parsedJSON.questions.map(mcq => ({
+                    question: mcq.question,
+                    options: mcq.options.map(option => ({
+                        option,  // option text
+                        isCorrect: option === mcq.correct_option || option === mcq.answer  // mark correct option based on answer field
+                    })),
+                    correct_option: mcq.correct_option || mcq.answer
+                }));
             }
-        } else if (Array.isArray(parsedJSON)) {
-            // Direct array format
-            formattedMCQs = parsedJSON.map(mcq => ({
-                question: mcq.question,
-                options: Array.isArray(mcq.options) ? mcq.options : [],
-                correct_option: mcq.correct_option
-            }));
-        } else if (parsedJSON.questions && Array.isArray(parsedJSON.questions)) {
-            // Alternative format using "questions" instead of "mcqs"
-            formattedMCQs = parsedJSON.questions.map(mcq => ({
-                question: mcq.question,
-                options: Array.isArray(mcq.options) ? mcq.options : [],
-                correct_option: mcq.correct_option || mcq.answer
-            }));
+    
+            // Validate MCQs
+            formattedMCQs = formattedMCQs.filter(mcq =>
+                mcq?.question &&
+                Array.isArray(mcq.options) &&
+                mcq.options.length > 1 &&
+                mcq.correct_option
+            );
+    
+            if (!formattedMCQs.length) {
+                throw new Error("No valid MCQs generated");
+            }
+    
+            console.log(`Generated ${formattedMCQs.length} MCQs for "${subtopic}" in "${chapter}"`);
+    
+            return {
+                topic: parsedJSON.topic || subtopic,
+                mcqs: formattedMCQs
+            };
+        } catch (error) {
+            console.error(`Error generating MCQs for "${subtopic}":`, error);
+            return {
+                topic: subtopic,
+                mcqs: []
+            };
         }
-        
-        // Validate MCQs - ensure each has a question, options, and correct answer
-        formattedMCQs = formattedMCQs.filter(mcq => 
-            mcq?.question && 
-            Array.isArray(mcq.options) && 
-            mcq.options.length > 1 && 
-            mcq.correct_option
-        );
-        
-        if (!formattedMCQs.length) {
-            throw new Error("No valid MCQs generated");
-        }
-        
-        // Log summary
-        console.log(`Generated ${formattedMCQs.length} MCQs for "${subtopic}" in "${chapter}"`);
-        
-        return {
-            topic: parsedJSON.topic || subtopic,
-            mcqs: formattedMCQs
-        };
-    } catch (error) {
-        console.error(`Error generating MCQs for "${subtopic}":`, error);
-        return { 
-            topic: subtopic, 
-            mcqs: [] 
-        };
     }
-    }
+    
 
 }
 
