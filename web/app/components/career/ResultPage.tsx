@@ -290,7 +290,7 @@ export default function CareerResults({ data, onReset, onSearch }: CareerResults
                         </div>
                         <div>
                           <h3 className="font-medium">{career.career_reasons.interest_based.title}</h3>
-                          <p className="text-slate-600">
+                          <p className="text-slate-600 text-sm">
                             {career.career_reasons.interest_based.description}
                           </p>
                         </div>
@@ -302,7 +302,7 @@ export default function CareerResults({ data, onReset, onSearch }: CareerResults
                         </div>
                         <div>
                           <h3 className="font-medium">{career.career_reasons.skills_based.title}</h3>
-                          <p className="text-slate-600">
+                          <p className="text-slate-600 text-sm">
                           {career.career_reasons.skills_based.description}
                           </p>
                         </div>
@@ -314,7 +314,7 @@ export default function CareerResults({ data, onReset, onSearch }: CareerResults
                         </div>
                         <div>
                           <h3 className="font-medium">{career.career_reasons.job_market_based.title}</h3>
-                          <p className="text-slate-600">
+                          <p className="text-slate-600 text-sm">
                             {career.career_reasons.job_market_based.description}
                           </p>
                         </div>
