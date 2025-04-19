@@ -70,11 +70,15 @@ function Block({id, createNewBlock, deletePreviousBlock, initialContent = ''}: B
             // Split the content into two block
             const content = contentRef.current.innerHTML 
             const contentBeforeCaret = content.substring(0, range?.startOffset!) 
-            const contentAfterCaret = content.substring(range?.startOffset!) 
+            
+            // if the content type is h1, h2, h3 or lists, manage the content accordingly
+            let contentAfterCaret = '';
+            if (contentTag === 'h1' || contentTag === 'h2' || contentTag === 'h3') {
+                contentAfterCaret = content.substring(range?.startOffset!, content.length);
+            }
 
             // Update the current block with the content before the caret
-            contentRef.current.innerHTML = contentBeforeCaret 
-
+            contentRef.current.innerHTML = contentBeforeCaret;
             if (contentAfterCaret) {
                 // Create a new block with the content after the caret
                 initialContent = contentAfterCaret 
