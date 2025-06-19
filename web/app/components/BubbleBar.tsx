@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { 
   Bold, Italic, Underline, Heading1, Link, ChevronDown, TextIcon, 
   Heading2, Heading3, List, AlignLeft, AlignCenter, AlignRight, 
-  AlignJustify, Quote, Code, Strikethrough, ListOrdered
+  AlignJustify, Quote, Code, Strikethrough, ListOrdered, Minus
 } from 'lucide-react'
 
 interface BubbleBarProps {
@@ -40,6 +40,13 @@ function BubbleBar({ onFormat }: BubbleBarProps) {
           className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Italic'
         >
           <Italic size={14} />
+        </button>
+
+        <button 
+          onClick={() => onFormat('insertHorizontalRule')}
+          className='lg:tooltip hover:bg-slate-200 p-2 rounded-sm' data-tip='Horizontal Separator'
+        >
+          <Minus size={14} />
         </button>
 
         {/* Underline */}

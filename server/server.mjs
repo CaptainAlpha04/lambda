@@ -2,10 +2,10 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
-import generateNotes from './routes/generateNotes.mjs';
 
 // Required Files
 import mentorRoute from './routes/mentor.mjs';
+import generateNotes from './routes/generateNotes.mjs';
 
 // Configuration
 dotenv.config();

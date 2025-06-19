@@ -121,3 +121,10 @@ ul {
 li {
   @apply text-base;
 }
+
+a {
+  @apply text-cyan-500 underline;
+  @apply hover:text-blue-700;
+  cursor: pointer;
+  
+}

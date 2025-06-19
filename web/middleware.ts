@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const url = request.nextUrl.pathname
 
   // List of protected paths you want to block access to
-  const protectedPaths = ['/career', '/chemlab', '/notebook', '/whiteboard']
+  const protectedPaths = []
 
   const isProtected = protectedPaths.some((path) =>
     url.startsWith(path)
